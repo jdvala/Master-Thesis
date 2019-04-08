@@ -1,0 +1,54 @@
+\newcommand{\theauthor}{\theforename\ \thesurname}
+\newcommand{\theauthorr}{\thesurname,\ \theforename}
+\begin{titlepage}
+ \thispagestyle{empty}
+ \begin{center}
+  {\university}\\[0.4cm]
+  {\school}\\[2.0cm]
+   \hbox{}\hfill
+    \begin{minipage}[t]{\textwidth}
+      \begin{center}
+        \logo
+	  \end{center}
+    \end{minipage} 
+   \hfill\hbox{}
+  \ \\[0.4cm]
+  \ifdbse{
+  {\large \thesiskind \\[1cm]}
+  {\huge\bf \thetitle \\[1cm]}
+  }
+  {
+  {\large \thesiskind \\[1.6cm]}
+  {\huge\bf \thetitle \\[1.6cm]}
+  }
+  { \ifgerman{Autor:}{Author:}}\\[0.4cm]
+  {\huge \theauthor}\\[0.8cm]
+  {\large\thedate}\\[0.8cm]
+  {\ifgerman{Betreuer:}{Advisors:}}\\[0.4cm] 
+  {\large
+\advisorone
+  }\\[0.2cm]
+  {
+\departmentone
+  }\\[0.8cm]
+  {\large
+\advisortwo\ 
+  }\\[0.2cm]
+  {
+\departmenttwo\ 
+  }
+ \end{center}
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Titelrückseite: Bibliographische Angaben
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\thispagestyle{empty}
+\vspace*{\fill}
+\begin{minipage}{15.0cm}
+\textbf{\theauthorr:}\\
+\emph{\thetitle\\}
+\thesiskind, \university, \theyear.
+\end{minipage}
+\newpage

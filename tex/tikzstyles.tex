@@ -1,0 +1,44 @@
+\usepackage{pgfplots}
+\usepackage{tikz}
+	\usetikzlibrary{arrows,positioning,backgrounds,fit,trees} 
+	\usetikzlibrary{fadings,shapes.geometric}
+	\usetikzlibrary{decorations,scopes,calc,decorations.pathreplacing}
+
+\ifgerman{
+	\pgfplotsset{tick label style={/pgf/number format/1000 sep=.,/pgf/number format/use comma}}
+}
+
+% Tortendiagramme
+\newcommand{\slice}[4]{
+  \pgfmathparse{0.5*#1+0.5*#2}
+  \let\midangle\pgfmathresult
+
+  % slice
+  \draw[thick,
+	%fill=background
+	] (0,0) -- (#1:1) arc (#1:#2:1) -- cycle;
+
+  % outer label
+  \node[label=\midangle:#4] at (\midangle:1) {};
+
+  % inner label
+  \pgfmathparse{min((#2-#1-10)/110*(-0.3),0)}
+  \let\temp\pgfmathresult
+  \pgfmathparse{max(\temp,-0.5) + 0.8}
+  \let\innerpos\pgfmathresult
+  \node at (\midangle:\innerpos) {#3};
+}
+\newcommand{\mypiechart}[2]{
+	\begin{tikzpicture}[scale=#1]
+		\newcounter{a}
+		\newcounter{b}
+		\foreach \p/\t in {#2}
+			{
+				\setcounter{a}{\value{b}}
+				\addtocounter{b}{\p}
+				\slice{\thea/100*360}
+							{\theb/100*360}
+							{\p\%}{\t}
+			}
+	\end{tikzpicture}
+}

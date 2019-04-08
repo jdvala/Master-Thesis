@@ -1,0 +1,57 @@
+% surrounding TODOs with this command, gives you the ability to remove all if necessary
+\iffinal{
+	\newcommand{\todo}[1]{}
+	\newcommand{\todots}{}
+}{
+	\newcommand{\todo}[1]{{\color{comment}\textit{[#1]}}}
+	\newcommand{\todots}{\todo{\ldots}}
+}
+\ifhints{
+	\newcommand{\hint}[1]{{\color{hint}\textit{#1}}}
+}{
+	\newcommand{\hint}[1]{}
+}
+
+% propositional formulas
+\newcommand{\pand}{\wedge}
+\newcommand{\por}{\vee}
+\newcommand{\pnot}{\neg}
+\newcommand{\pequals}{\Leftrightarrow}
+\newcommand{\pimplies}{\Rightarrow}
+\newcommand{\pnimplies}{\nRightarrow}
+\newcommand{\patmostone}{\mbox{\textit{atmost1}}}
+\newcommand{\pchooseone}{\mbox{\textit{choose1}}}
+
+% mathematical definitions and theorems
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+
+% print URLs not in Typewriter Font
+\def\UrlFont{\rm}
+
+% empty page without page number, continue on the next right page
+\newcommand{\blankpage}{\clearpage{\pagestyle{empty}\cleardoublepage}}
+
+% index stuff
+\makeatletter
+\def\mydotfill{\leavevmode\xleaders\hb@xt@ .44em{\hss.\hss}\hfill\kern\z@}
+\makeatother
+\def\bold#1{{\bfseries #1}}
+\newbox\dbox \setbox\dbox=\hbox to .4em{\hss.\hss} % dot box for leaders
+\newskip\rrskipb \rrskipb=.5em plus3em % ragged right space before break
+\newskip\rrskipa \rrskipa=-.17em plus -3em minus.11em % ditto, after
+\newskip\rlskipa \rlskipa=0pt plus3em % ragged left space after break
+\newskip\rlskipb \rlskipb=.33em plus-3em minus.11em % ragged left before break
+\newskip\lskip \lskip=3.3\wd\dbox plus1fil minus.3\wd\dbox % for leaders
+\newskip \lskipa \lskipa=-2.67em plus -3em minus.11em %after leaders
+\mathchardef\rlpen=1000 \mathchardef\leadpen=600
+\def\rrspace{\nobreak\hskip\rrskipb\penalty0\hskip\rrskipa}
+\def\rlspace{\penalty\rlpen\hskip\rlskipb\vadjust{}\nobreak\hskip\rlskipa}
+\let\indexbreak\rlspace
+\def\raggedurl{\penalty10000 \hskip.5em plus15em \penalty0 \hskip-.17em plus-15em minus.11em}
+\def\raggeditems{\nobreak\hskip\rrskipb \penalty\leadpen \hskip\rrskipa %
+\vadjust{}\nobreak\leaders\copy\dbox\hskip\lskip %
+\kern3em \penalty\leadpen \hskip\lskipa %
+\vadjust{}\nobreak\hskip\rlskipa}
+\renewcommand*\see[2]{\rlspace\emph{\seename}~#1} % from makeidx.sty

@@ -1,0 +1,191 @@
+\documentclass[
+	%dbse, 	   % include logo of DBSE working group
+	%german,   % titles for a thesis in German, A4 paper
+	a4paper,   % forces A4 format even if <german> is not selected (useful for printing)
+	hints,     % shows instructions on how to write the thesis
+	%draft,    % omit title page, listings, and particular chapters selected below using include only
+	%print,    % the printed version does not use colored links
+	%final,    % removes all TODOs
+]{tex/ttthesis}
+
+\input{tex/colorscheme}
+\input{tex/lststyles}
+\input{tex/tikzstyles}
+\input{tex/macros}
+\usepackage{caption}
+\usepackage{array}
+\usepackage{multirow}
+%****************************************https://www.overleaf.com/project/5bf3df67d5a222068c001d80*****************************%
+% META                                                                %
+%*********************************************************************%
+
+% available profiles: ovgu, tubs, tubs_isf
+\input{tex/profiles/ovgu.tex}
+
+\newcommand{\advisorone}{Prof. \ {Gunter Saake}}
+\newcommand{\departmentone}{\ifgerman{Institut für}{Institute for}Technical and Operational Information Systems}
+
+\newcommand{\advisortwo}{}
+\newcommand{\departmenttwo}{}
+
+% Thesis kind
+\ifgerman{\newcommand{\thesiskind}{Masterarbeit}}{\newcommand{\thesiskind}{Master's Thesis}}
+%\ifgerman{\newcommand{\thesiskind}{Bachelorarbeit}}{\newcommand{\thesiskind}{Bachelor Thesis}}
+%\newcommand{\thesiskind}{Diplomarbeit} %do not translate
+%\ifgerman{\newcommand{\thesiskind}{Doktorarbeit}}{\newcommand{\thesiskind}{Dissertation}}
+
+\ifgerman{
+	\newcommand{\theforename}{\todo{Vorname}}
+	\newcommand{\thesurname}{\todo{Nachname}}
+	\newcommand{\thetitle}{\todo{Titel der Arbeit}}
+	\newcommand{\thedate}{\todo{13. Monat 2014}}
+}{
+	\newcommand{\theforename}{Jay Dilipbhai}
+	\newcommand{\thesurname}{Vala}
+	\newcommand{\thetitle}{Classification of Legal Text Using Deep Learning: Evaluation of General-Purpose Resources for a Legal Domain-Specific Task}
+	\newcommand{\thedate}{}
+	
+}
+\newcommand{\theyear}{2018}
+% date for signature in erklaerung.tex (declaration of originality)
+\newcommand{\signaturedate}{\todo{42. Monat 2014}}
+
+%*********************************************************************%
+% SETUP                                                               %
+%*********************************************************************%
+
+% meta informations of the document
+\hypersetup{
+ pdfauthor={\theforename\ \thesurname},
+ pdftitle={\thetitle}
+}
+
+% open index file
+\ifnotdraft{\makeindex}
+
+%*********************************************************************%
+% ACRONYMS                                                            %
+%*********************************************************************%
+
+% HOWTO: \gls{IDE} for singular or \glspl{IDE} for plural with 's
+%\makeglossaries
+\newacronym{IDE}{IDE}{Integrated Development Environment}
+%\glsaddall % use only if you have acronyms that occur only in graphics
+
+%*********************************************************************%
+% THE DOCUMENT                                                        %
+%*********************************************************************%
+
+\begin{document}
+
+\ifgerman{
+	\labelformat{lstlisting}{Quelltext~#1}
+	\renewcommand{\lstlistingname}{Quelltext}
+}{
+	\labelformat{lstlisting}{Listing~#1}
+}
+
+% set the path where graphics are located
+\graphicspath{{pics/}}
+
+\ifnotdraft{
+	\frontmatter
+	\pagenumbering{roman}
+	\include{tex/titlepage}
+
+	\include{chapters/abstract}
+	\blankpage
+    
+    % The whole acknowledgement is meant to be written here, so great.
+	\chapter*{Acknowledgements}
+	 I would like to thank...
+	\blankpage
+}
+
+%*********************************************************************%
+% LISTINGS                                                            %
+%*********************************************************************%
+
+\ifnotdraft{
+	{\parskip 0pt \pdfbookmark{\contentsname}{\contentsname}\chapterheadfont \tableofcontents} % toc bitte einzeilig
+	\blankpage
+
+	\ifgerman{
+		\listoffigures
+		\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
+
+		\listoftables
+		\addcontentsline{toc}{chapter}{Tabellenverzeichnis}
+
+		\renewcommand{\lstlistlistingname}{Quelltextverzeichnis}
+		\blankpage
+		\lstlistoflistings
+		\addcontentsline{toc}{chapter}{\lstlistlistingname}
+
+		%\renewcommand*{\firstacronymfont}[1]{\emph{#1}}
+		%\printglossary[type=acronym,title=List of Acronyms,toctitle=Abkürzungsverzeichnis]
+	}{
+		\listoffigures
+		\addcontentsline{toc}{chapter}{List of Figures}
+
+		\listoftables
+		\addcontentsline{toc}{chapter}{List of Tables}
+
+		\renewcommand{\lstlistlistingname}{List of Code Listings}
+		\blankpage
+		\lstlistoflistings
+		\addcontentsline{toc}{chapter}{\lstlistlistingname}
+
+		\renewcommand*{\firstacronymfont}[1]{\emph{#1}}
+		\printglossary[type=acronym,title=List of Acronyms,toctitle=List of Acronyms]
+	}
+}
+
+%*********************************************************************%
+% CHAPTERS                                                            %
+%*********************************************************************%
+
+\mainmatter
+\pagenumbering{arabic}
+
+\include{chapters/introduction}
+\include{chapters/background}
+\include{chapters/concept}
+\include{chapters/implementation}
+\include{chapters/evaluation}
+\include{chapters/relatedwork}
+\include{chapters/conclusion}
+%\include{chapters/futurework}
+
+%*********************************************************************%
+% APPENDIX                                                            %
+%*********************************************************************%
+
+\appendix
+\include{chapters/appendix}
+
+%*********************************************************************%
+% LITERATURE                                                          %
+%*********************************************************************%
+
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{\bibname} % 
+\bibliographystyle{alpha} % plain gerplain abbrvnat unsrtnat alphag alpha
+% in a thesis you have space... use full names
+\bibliography{literature/IEEEfull,literature/MYfull,literature/literature}
+% in a paper, space is limited. use abreviations
+%\bibliography{../literature/IEEEabrv,../literature/MYabrv,../literature/literature}
+
+%*********************************************************************%
+% ERKLÄRUNG                                                           %
+%*********************************************************************%
+
+\ifnotdraft{
+	\cleardoublepage
+	\phantomsection
+	\printindex
+	\include{tex/erklaerung}
+}
+
+\end{document}
