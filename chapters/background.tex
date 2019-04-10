@@ -66,7 +66,7 @@ Domain knowledge about the instances can be used to better assign the instances 
     \item \textbf{Cannot-link}: This constraint specifies that the two instances should not be placed in same cluster.
 \end{itemize}
 
-This is a modified version of K-means clustering with the above mentioned constraints. The algorithm takes data $D$ and a set of \textit{must-link} constrains and a set of \textit{cannot links} constrains. As a result the data will be divided into $k$ satisfying all the constrains. When a data point is assigned to a cluster the algorithm ensures that it does not violate any of the specified constrains.
+This is a modified version of K-means clustering with the above mentioned constraints. The algorithm takes data $D$ and a set of \textit{must-link} constrains and a set of \textit{cannot links} constrains. As a result the data will be divided into $k$ groups satisfying all the constrains. When a data point is assigned to a cluster the algorithm ensures that it does not violate any of the specified constrains.
 
 \todo{example}
 
@@ -169,7 +169,7 @@ A Support Vector Machines is a supervised learning algorithm. It tries to find l
 
 % The following paragraph will be in the implementation chapter
 
-The selection of hyper-parameters for the Support Vector Machines is an important task for achieving good results. Grid search is the most widely used technique for this task because of its simplicity in implementation but it is trivial to parallelize. Gird Search for Linear SVMs was performed to find the optimum value of $C$ which is the penalty function for a set of values (0.001,0.01, 0.1,1,10,100). The selected value for which best results were obtained is 1.
+
 
 \clearpage
 \section{Deep Learning} \label{sec:DeepLearning}
@@ -378,7 +378,7 @@ Calculating the new weight value $w_{7}$ using all the values from \ref{eq:backP
 \end{align}
 
 \subsection{Backpropagation Through Time}
-The Backpropagation through Time (BPTT) is an extension of Backpropagation which is based on transforming a feedback network to a feedforward network by unfolding it over time \cite{ahmad2004recurrent}  
+The Backpropagation through Time (BPTT) is an extension of Backpropagation which is based on transforming a feedback network to a feedforward network by unfolding it over time \cite{ahmad2004recurrent}. Therefore, when a network processes a sequence which is $t$ times long, then $t$ copies of the network are created and the feedback connections are modified to be feedforward connections from one copy to another. This method is similar to training a large feed forward neural network with weights being modified and treated as shared weights.
 
 \section{Text Representation}\label{backgroundTextRepresentation}
 
@@ -423,10 +423,8 @@ where:
       & n_{i}=\text{number of documents with term $i$ in it.}\\
 \end{align*}
 
-\todots
-
 \subsection{Word Embeddings}
-Conventionally, text representation in natural language processing involves techniques like \textit{Continuous bag-of-words} and \textit{tf-idf}. These techniques are a simple representation of various features. However, in bag-of-words approach, grammar and word order are not considered. And in tf-idf only importance of words is considered, \ref{sec:svm}. Hence, these techniques do not capture the semantics of the text. \cite{maas2011learning}.
+Conventionally, text representation in natural language processing involves techniques like \textit{bag-of-words} model in which a text is represented by the bag (words in the text), \textit{skip-gram} model which is generalization of \textit{n-grams} models where the words do not need to be successive for the text in consideration but can be skipped, hence named \textit{skip-gram} \cite{guthrie2006closer} and  \textit{tf-idf}. These techniques are a simple representation of various features. However, in the bag-of-words approach, grammar and word order are not considered. And in tf-idf only the importance of words is considered, \ref{sec:svm}. Hence, these techniques do not capture the semantics of the text. \cite{maas2011learning}.
 
 Due to the above mentioned limitations, word embeddings were introduced. Word embeddings are a vector representation of the meaning of words in the corpus. This means that words are placed in a high-dimensional vector space where words with the similar meaning are placed close to each other. Neural network-based word vector models are usually trained using stochastic gradient descent where the gradient is obtained by backpropagation \cite{le2014distributed}.
 
@@ -479,20 +477,84 @@ Audi          & -0.3, 0.5        \\ \hline
 \end{table}
 
 \begin{equation}
-        cosine-similarity_{(Volkswagen, Mercedes)} = 0.955 
+        \text{cosine-similarity (Volkswagen, Mercedes)} = 0.955 
 \end{equation}
 \begin{equation}
-    cosine-similarity_{(Volkswagen, Audi)} = 0.536
+    \text{cosine-similarity (Volkswagen, Audi)} = 0.536
 \end{equation}
 \begin{equation}
-    cosine-similarity_{(Mercedes, Audi)} = 0.761
+    \text{cosine-similarity (Mercedes, Audi)} = 0.761
 \end{equation}
 
 Adding more dimensions captures more information and hence increases the quality of the results. These vectors represent the cars with numbers which is necessary for machines to understand and also we can calculate similarities between these vectors. 
 
-One popular algorithm is \textbf{Word2Vec} \cite{mikolov2013efficient}, in this implementation word embeddings are trained using two models, continuous bag-of-words model and continuous skip-gram model. In continuous bag-of-words, the projection of words into the vector space is not influenced by the order of words and words from the future are also used in this model. Unlike standard bag-of-words, continuous bag-of-word model uses continuous distributed representation of context. The architecture is similar to feed-forward Neural Net Language model. In Continuous Skip-gram model, instead of predicting next word based on context, it tries to maximize the classification of next word based on other word in the sentence.
+One popular algorithm is \textbf{Word2Vec} \cite{mikolov2013efficient}, in this implementation word embeddings are trained using two models, \textit{continuous bag-of-words} model and \textit{continuous skip-gram model}. In continuous bag-of-words, the projection of words into the vector space is not influenced by the order of words and words from the future are also used in this model. In the Continuous Skip-gram model, instead of predicting next word based on the context, it tries to maximize the classification of next word based on other word in the fixed window size sentence.
 
-After the network converges, words with similar meaning are placed together. For example words like "powerful" and "strong" are placed closed in the vector space. \todo{Need to work on this, doesn't look good}
+Consider the following sentence to understand how the aforementioned methods works,
+
+\begin{quote}
+    \textit{I am the master of my fate, I am the captain of my soul} - Invictus, William Ernest Henley.
+\end{quote}
+
+\subsubsection*{Continuous Bag-of-words Model}
+This model works by looking at words not only from a few words in the past but also a few words from the future to predict the target word. 
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=12cm]{pics/bag-of-wordWord2Vec.jpg}
+    \caption{Continuous bag-of-words model data set creation}
+    \label{fig:word2VecBagOfWords}
+\end{figure}
+
+The target word is \textit{``fate"} and we want to predict it so we take a sliding window over the sentence as shown in \ref{fig:word2VecBagOfWords}. 
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{ccccc}
+\hline
+\multicolumn{1}{l}{\textbf{Input 1}} & \multicolumn{1}{l}{\textbf{Input 2}} & \textbf{Input 3} & \multicolumn{1}{l}{\textbf{Input 4}} & \textbf{Output} \\ \hline
+i & am & master & of & the \\ \hline
+am & the & of & my & master \\ \hline
+the & master & my & fate & of \\ \hline
+master & of & fate & i & my \\ \hline
+of & my & i & am & fate \\ \hline
+\end{tabular}
+\caption{Dataset for training continuous bag-of-words model}
+\label{datasetBagOfWords}
+\end{table}
+
+This process will continue for the whole sentence in this case and whole corpus in case we have a big dataset. This dataset will then be feed into neural network for it to learn. 
+
+\subsubsection*{Continuous Skip-gram Model}
+This model tries to predict the neighbouring words based on the current word. So the training process for the above mentioned sentence is as follows.
+
+We can take a sliding window over the sentence and construct a dataset for training the skip-gram model, 
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=12cm]{pics/skipgramWord2vec.jpg}
+    \caption{Continuous skip-gram model dataset creation}
+    \label{fig:skipgramWord2vec}
+\end{figure}
+
+We take the word \textit{``the"} and then start building the dataset as the word \textit{``the"} as input and the two left neighboring words \textit{``i"} and \textit{``am""} and the two right neighboring words \textit{``master"} and \textit{``of"} as shown in the \ref{fig:skipgramWord2vec}
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{cc}
+\hline
+\textbf{Input} & \textbf{Output} \\ \hline
+the            & i               \\ \hline
+the            & am              \\ \hline
+the            & master          \\ \hline
+the            & of              \\ \hline
+\end{tabular}
+\caption{Dataset for training continuous skip-gram model}
+\label{word2vec-skipgram-dataset}
+\end{table}
+
+This process will continue for the whole sentence until each and every word of the sentence is in the training dataset against its neighboring words. This dataset is then feed to the untrained neural network to predict the output.  
+
+After the network converges, words with similar meaning are placed together in the embedding space. For example words like "powerful" and "strong" are placed close to each other in the vector space. \todo{Need to work on this, doesn't look good}
 
 
 \todo{This following paragraph goes into implementation}
@@ -500,16 +562,12 @@ After the network converges, words with similar meaning are placed together. For
 The model used in creation of the word vectors is a neural network, and neural networks are data hungry as it requires a lot of data to train them properly. As a result, another domain specific dataset is used in this experiment because dataset used for classification is small. Hence, the whole EUR-Lex dataset was used as it contains 19,348 documents mostly consisting regulations, decisions and directives of European Union \cite{jf:SemanticLaw}.
 
 \subsection{Cross Lingual Word Embedding}\label{backgroundCrosslingual}
+
 Word vectors for different languages are in different vector spaces, hence it can not be combined together, but the classification task involves classifying text from two languages, \textbf{English} and \textbf{German}. Hence, for classifying both languages within a single model is necessary. This not only mitigates the error caused by a language detector in multilingual systems, where a language detector first detects the language and then the respective classifier is invoked. In that affair, error propagates downwards and amplifies. And using multiple languages also increase the amount of data for training if multilingual parallel corpora is available where corpus of single language is low. 
 
-To achieve this \cite{duong-EtAl:2016:EMNLP}, proposed using bilingual dictionaries and monolingual data. The model uses an extension of contextual bag-of-word(CBOW) model \cite{mikolov2013efficient}. This method has benefits as often there no parallel data when working on a domain specific problems, also it is comparatively easy to obtain or create bilingual domain specific dictionaries. \todo{Write about the method}
+To achieve this Duong et. al \cite{duong-EtAl:2016:EMNLP}, proposed using bilingual dictionaries and monolingual data. The model uses an extension of contextual bag-of-word(CBOW) model \cite{mikolov2013efficient}. This method has benefits as often there no parallel data when working on a domain specific problems, also it is comparatively easy to obtain or create bilingual domain specific dictionaries.
 
-I will be using the technique suggested by \cite{duong-EtAl:2016:EMNLP}. For creating bilingual dictionary, \textit{EuroVoc} thesaurus \cite{steinberger2002cross} provided by Publication office of European Union will be used. It is available in 24 official languages recognised by European Union. This thesaurus is domain specific hence it does not involve common words that might occur in the documents. Due to this reason, this thesaurus is combined with bilingual dictionaries that are available from \textit{Facebook MUSE} \cite{conneau2017word}. This bilingual dictonaries were created using Facebook's internal translation tools. The authors claims that these dictionaries handle the polysemy of the words better. This combined bilingual dictionary with the original EUR-Lex dataset was used to create the legal domain specific bilingual word embeddings. 
-
-For creating General purpose word embedding using the above mention method is time and resource consuming, as a lot of monolingual data needs to be obtained and also large bilingual dictonaries need to be obtained as well. This would also mean that there would be bais in creation of these embeddings as we would have prior knowledge about what works well with algorithms and the data we are using, also this would beat the purpose of comparing General Purpose resources to one created using domain specific resources. Hence, we are using Facebook's MUSE word embeddings \cite{conneau2017word}, the author claims that the embeddings are state-of-art multilingual word embeddings, these word embedding are facebooks fasttext \cite{bojanowski2017enriching} which are aligned in common vector space. They use two sets word embeddings that are trained on monolingual data, and learns the mapping between these two embedding in a common vector space. It exploits the similarities of monolingual embedding space \cite{mikolov2013exploiting} to learn mapping between the two embeddings.
-The method used by \cite{conneau2017word} is domain adversarial learning. In this method a model is trained to discriminate between randomly sampled elements from the two embeddings. For example, let $X$ $=$ ${x_{1}, x_{2}...x_{n}}$ be the first of the two monolingual word embedding, and $Y$ $=$ ${y_{1}, y_{2}...,y_{n}}$ be the second monolingual word embedding. $W$ is trained to block the discriminator making right predictions
-
-
+Facebook's MUSE Python library \cite{conneau2017word} aligns word vectors from multiple languages to a single vector space, the author claims that these embeddings state-of-art multilingual word embeddings, they have used Facebook's Fasttext \cite{bojanowski2017enriching} monolingual word embeddings and aligned them in common vector space. They use two sets word embeddings that are trained on monolingual data, and learns the mapping between these two embedding in a common vector space. It exploits the similarities of monolingual embedding space \cite{mikolov2013exploiting} to learn mapping between the two embeddings.
 
 \subsection{Long Short Term Memory}
 Neural networks have shown remarkable capabilities in processing and modeling natural language. Recurrent Neural Networks (RNN) and Convolutional Neural Networks (CNN) are common architectures for handling natural language. Long Short Term Memory (LSTM)\cite{hochreiter1997long} is a variant of RNNs, unlike other feed forward neural networks these networks have recurrent connections in them which allow information to persist.
@@ -524,7 +582,7 @@ Neural networks have shown remarkable capabilities in processing and modeling na
 
 The \ref{fig:rnn_single_cell} shows a single RNN cell having a recurrent connection. This recurrent connection allows it to retain the previous state and make use of the context of the previous state \cite{graves2009novel}. Due to this property RNNs are very effective in processing text. 
 
-RNNs are effective but suffer from the problem that the capacity of them to retain the previous states is fairly limited. The problem is that the input influences either diminishes the output or blows it exponentially. This is referred to as the problem of \textit{vanishing gradients}\cite{hochreiter2001gradient}. This problem makes it hard for RNNs to make use of more than a few previous states. LSTMs are a special kind of RNNs which address the problem of vanishing gradients. They contains recurrently connected sub-networks called \textit{memory blocks} and each of these blocks contains three gates; input gate, forget gate and output gate. These gates allows an LSTM to store information for a longer period of time. If the input gate is shut, that is if it has no activation (or close to 0), the activation of a block will not be overwritten for the next incoming inputs. Also, the block activation is only available to the network when the output gate is open. The forget gate switches on and off the recurrent connections.
+RNNs are effective but suffer from the problem that the capacity of them to retain the previous states is fairly limited. The problem is that the input influences either diminishes the output or increases it exponentially. This is referred to as the problem of \textit{vanishing gradients}\cite{hochreiter2001gradient}. This problem makes it hard for RNNs to make use of more than a few previous states. LSTMs are a special kind of RNNs which address the problem of vanishing gradients. They contains recurrently connected sub-networks called \textit{memory blocks} and each of these blocks contains three gates; input gate, forget gate and output gate. These gates allows an LSTM to store information for a longer period of time. If the input gate is shut, that is if it has no activation (or close to 0), the activation of a block will not be overwritten for the next incoming inputs. Also, the block activation is only available to the network when the output gate is open. The forget gate switches on and off the recurrent connections.
 
 \begin{figure}[!htbp]
     \centering

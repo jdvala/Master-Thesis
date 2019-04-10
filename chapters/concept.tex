@@ -40,7 +40,7 @@ As in many real world applications, data is in skewed distribution and EUR-Lex s
 To handle the imbalances in the dataset various techniques have been proposed. \textit{Oversampling} and \textit{Undersampling} are the two most common ones. Oversampling refers to the process of increasing the number of instances in the minority classes and Undersampling is when we remove instances from the majority class to even out the dataset. Undersampling in our case would mean that we reduce the instances from the majority classes which are as it less to being with. For oversampling the domain specific and limited dataset, I could not find works using artificial techniques such as SMOTE to enhance the data. 
 \todo{SMOTE visual on 90 10 dataset}
 
-The EUR-Lex summaries are multi-label \todo{mention multi-label thing before this somewhere}, this is generally the case with legal text as a single case may be applicable in many situations. So having multiple labels for a single document can be exploited to alleviate the problem of class imbalance. The sampling of the documents is done in such a way that it reduces samples from the majority classes on the bases of its presence in the minority classes. Hence, a document will be labeled with the class with fewest examples. 
+The EUR-Lex summaries are multi-label, this is generally the case with legal text as a single case may be applicable in many situations. So having multiple labels for a single document can be exploited to alleviate the problem of class imbalance. The sampling of the documents is done in such a way that it reduces samples from the majority classes on the bases of its presence in the minority classes. Hence, a document will be labeled with the class with fewest examples. 
 
 The resampling technique can be better understood with the following example. Consider the dataset in the \ref{table:exampleDataResampling} and the distribution of samples across classes in \ref{table:SamplesDistributionDataResamplingExample}
 
@@ -117,7 +117,7 @@ In \ref{table:SamplesDistributionDataResamplingExampleAfterResampling} class 5 b
 This method of resampling has its own limitation. As the samples from majority class is removed and only kept in minority class, the majority class is loosing information about that sample. If the data in a class is diverse, that is, if every sample of that class is unique then applying this technique would result into loss of a that unique representation of the class.
 
 
-\section{Phase 3: Model Architecture and Training}
+\section{Phase 3: Model Architecture and Training}\label{sec:conceptRQ}
 The third phase goes into details regarding the conceptual aspect of the three research questions. It will also detail how the dataset was created for all the research question and what all evaluation strategies were employed for comparison. 
 
 \subsection{Research Question 1:} \label{question1}
@@ -147,9 +147,9 @@ Two LSTM models are trained to see the effects of clustering. The training workf
 \end{figure}
 
 \subsubsection*{Evaluation} \label{evaluationQuestionOne}
-As the SVMs are trained on full documents and LSTMs are trained on sentences created using sliding window technique, the results from both can not be compared. Ferguson et al.,(2009) preformed sentiment analysis of the financial blogs on paragraph-level 
+The SVMs are trained on full documents and the LSTMs are trained on the sentences created using the  sliding window technique, for this reason, the results from both the models can not be compared. Ferguson et al.,(2009) \cite{ferguson2009exploring} preformed sentiment analysis of the financial blogs on paragraph-level 
 annotated text, they summed up the predictions given by the classifier. In our case, the classifier will give probability to each sentence belonging to each class. As each document comprises of sentences, if we add all the probabilities for each class across all the sentences of a document we get probabilities of each class for that document and then we choose the class with highest probability.
-
+\clearpage
 \subsection{Research Question 2:} \label{question2}
 The second research question is:
 
@@ -164,23 +164,23 @@ The second research question is:
     \label{fig:FlowResearchQuestion2}
 \end{figure}
 
-\ref{fig:FlowResearchQuestion2} shows the general workflow for the second question we compare the general purpose resources, that is word embeddings for training LSTM, with the word embeddings trained on legal corpus. Facebook's Fasttext\footnote{https://fasttext.cc/docs/en/crawl-vectors.html}\cite{graves2009novel} provides word vectors in 157 languages on Wikipedia\footnote{https://www.wikipedia.org/} and Common Crawl\footnote{http://commoncrawl.org/} data and is trained using Continuous bag-of-words model in dimension 300, with character n-grams of length 5, a window of size 5 and 10 negatives. But as the word embeddings for multiple languages can not be combined together because they belong in different vector space. Facebook's MUSE\footnote{https://github.com/facebookresearch/MUSE} \cite{conneau2017word} with help of parallel dictionaries was used to align them in a single vector space. After this both embeddings can be simply concatenated and can be used for classification purpose. 
+\ref{fig:FlowResearchQuestion2} shows the general workflow for the second question we compare the general purpose resources, that is word embeddings for training LSTM, with the word embeddings trained on legal corpus. Facebook's Fasttext\footnote{https://fasttext.cc/docs/en/crawl-vectors.html}\cite{graves2009novel} provides word vectors in 157 languages on Wikipedia\footnote{https://www.wikipedia.org/} and Common Crawl\footnote{http://commoncrawl.org/} data and is trained using Continuous bag-of-words model in dimension 300, with character n-grams of length 5, a window of size 5 and 10 negatives. But as the word embeddings for multiple languages can not be combined together because they belong in different vector space. Facebook's MUSE\footnote{https://github.com/facebookresearch/MUSE} \cite{conneau2017word} with help of parallel dictionaries was used to align them in a single vector space. After this both embeddings can be simply concatenated and can be used for classification purpose. These word embeddings are created from various sources, it contains text from various domains and hence it will henceforth be refereed to as general purpose word embeddings.
 
 For creating domain specific word embeddings Duong et al.(2016)\cite{duong-EtAl:2016:EMNLP} proposed learning bilingual word embedding without without bilingual Corpora\cite{duong-EtAl:2016:EMNLP}. They also make use of parallel bilingual dictonaries and use Continuous bag-of-word model to create these embeddings. These word embeddings are however in a single vector space.
 
 As the domain specific word embeddings are create using legal domain specific data this word embedding will not be further trained. In case of general purpose word embeddings two models will be trained - one with frozen embedding layer and other model will train the word embeddings. This is done to see if training the general purpose word embeddings produces results comparable to the ones trained on legal data.
 
-Similar to the first question all the models will be trained on clustered data as shown in \ref{fig:clusterFlowClassification} and the evaluation will also be done similar to question one (See \ref{evaluationQuestionOne}).
+Similar to the first question all the models will be trained on clustered data as shown in \ref{fig:clusterFlowClassification} and the as all the models are trained on same data and in same fashion, evaluation will also be done on sentence level and on document level similar to question 1 (See \ref{evaluationQuestionOne}).
 
 \subsection{Research Question 3:} \label{question3}
 
 The third research question is:
 
 \begin{quote}
-    Can \textit{LSTM} perform better  when a single model is trained on multiple languages, compared to training one model for each language separately?
+    Can \textit{LSTM} perform better when training multiple languages in single model, compared to training one model for each language separately?
 \end{quote}
 
-\ref{fig:FlowResearchQuestion3} shows the general workflow for the third research question. In this question we explore the possible effects of having data in multiple languages on a classifier. C.-P. Wei et al.(2014)\cite{Wei:2014:EPD:2566999.2567111} suggested that when training set for a single language is small it is less representative target semantic space and a classifier trained on this data set would not yield satisfactory results. However, if text from another language is available for the predefined category then it can be beneficial to improve the effectiveness of the classifier for the previous language. The naïve approaches of handling such data is to build separate classifiers for separate languages. This naïve method does not take the benefit of availability of data across different language for a defined category. 
+\ref{fig:FlowResearchQuestion3} shows the general workflow for the third research question. In this question we explore the possible effects of having data in multiple languages on a classifier. C.-P. Wei et al.(2014)\cite{Wei:2014:EPD:2566999.2567111} suggested that when the training set for a single language is small it is less representative of the target semantic space and a classifier trained on this data set would not yield satisfactory results. However, if the text from another language is available for the predefined category then it can be beneficial and can improve the effectiveness of the classifier for the previous language. The naïve approaches of handling such data is to build separate classifiers for separate languages. This naïve method does not take the benefit of availability of data across different language for a defined category. 
 
 In this research question, first two separate classifiers will be trained on two different languages namely, \textit{English} and \textit{German}. The results from both of them will be combined to get the average performance (we will average the macro-average precision, recall, and f-score across both the models) of classification of these two classifiers. The training and evaluation of these classifiers will be similar to the training done in question 1 and 2. This performance of the two classifiers will then be compared to a single classifiers that will be trained on both the languages with multilingual word embeddings.
 
@@ -193,3 +193,6 @@ The training of all the classifiers for this question will be done in the simila
     \caption{Flow chart representing the workflow for the third research question}
     \label{fig:FlowResearchQuestion3}
 \end{figure}
+
+For the evaluation, the multilingual classifier is evaluated on summation of predictions from the sentences of each document for each class. Also, both of the monolingual classifiers will be evaluated on summation of the predictions from the sentences of each document of each class but these results will then be averaged to be able to compare it with the multilingual classifier also to see how they perform on sentence level the evaluation will also consider the results on sentence level.
+
