@@ -116,9 +116,20 @@ In \ref{table:SamplesDistributionDataResamplingExampleAfterResampling} class 5 b
 
 This method of resampling has its own limitation. As the samples from majority class is removed and only kept in minority class, the majority class is loosing information about that sample. If the data in a class is diverse, that is, if every sample of that class is unique then applying this technique would result into loss of a that unique representation of the class.
 
+\subsection*{Training Word Vectors}
+
+Training the word embeddings is the last step of the second phase. Monolingual word embeddings for training Bidirectional LSTM is trained using \textit{Skip-gram} method using Fasttext\footnote{https://fasttext.cc/docs/en/crawl-vectors.html}\cite{graves2009novel} tool. These embedding were trained on EUR-Lex corpus rather than EUR-Lex summaries dataset as the EUR-Lex summaries dataset is considered less to train satisfactory results. These monolingual word embeddings are in English Language and are in 300 dimensions
+
+For training general purpose multilingual word embedding we will be again using Fasttext which provides word vectors in 157 languages on Wikipedia\footnote{https://www.wikipedia.org/} and Common Crawl\footnote{http://commoncrawl.org/} data and is trained using Continuous bag-of-words model in dimension 300. But as the word embeddings for multiple languages can not be combined together because they belong in different vector space. Facebook's MUSE\footnote{https://github.com/facebookresearch/MUSE} \cite{conneau2017word} with help of parallel dictionaries was used to align both word vectors into a single vector space. Upon alignment, both the embeddings (English and German) can be simply concatenated and can be used for classification purpose. These word embeddings are created from various sources, it contains text from various domains and hence it will henceforth be refereed to as general purpose word embeddings.
+
+For training domain specific word embeddings, we will use method proposed by Duong et al.(2016)\cite{duong-EtAl:2016:EMNLP} for learning bilingual word embedding without without bilingual Corpora. They also make use of parallel bilingual dictonaries and use Continuous bag-of-word model to create these embeddings. These word embeddings are however in a single vector space unlike Fasttext word embeddings which were aligned later.
+
+The details of the training the word vectors will be discussed in the next chapter.
 
 \section{Phase 3: Model Architecture and Training}\label{sec:conceptRQ}
 The third phase goes into details regarding the conceptual aspect of the three research questions. It will also detail how the dataset was created for all the research question and what all evaluation strategies were employed for comparison. 
+
+
 
 \subsection{Research Question 1:} \label{question1}
 The first research question is:
@@ -126,7 +137,7 @@ The first research question is:
     Can \textit{Bidirectional LSTM} achieve better results in terms of evaluation metrics (Precision, Recall and F-Score) than the thoroughly studied text classification methods such as \textit{Support Vector Machines}?
 \end{quote}
 
-\ref{fig:FlowResearchQuestion1} shows the approach employed for the above mentioned research question. After the acquiring data from EUR-Lex website, the data was cleaned or prepossessed (see \ref{ConceptCleaning}). Upon preprocessing, the textual data needs to be converted using suitable text representations technique according to the algorithm it will be trained on. Here, there are two algorithms being tested, Support Vector Machines (SVM) and Bidirectional LSTM, and both of them employ different techniques to represent text for training (See \ref{backgroundTextRepresentation}). SVM uses TF-IDF representation whereas LSTM uses Word Embeddings. 
+\ref{fig:FlowResearchQuestion1} shows the approach employed for the above mentioned research question. After acquiring the data from EUR-Lex website, the data was cleaned or prepossessed (see \ref{ConceptCleaning}). Upon preprocessing, the textual data needs to be converted using suitable text representations technique according to the algorithm it will be trained on. Here, there are two algorithms being tested, Support Vector Machines (SVM) and Bidirectional LSTM, and both of them employ different techniques to represent text for training (See \ref{backgroundTextRepresentation}). The SVM uses the TF-IDF representation whereas the LSTM uses the Word Embeddings. 
  
 Due to hardware limitations training Bidirectional LSTM is difficult if the length of a single instance is very long. Hence each document was divided into sentences using sliding window technique (See \ref{backgroundSlidingWindow}) and document label were assigned to each sentence created from that document. 
 
@@ -137,7 +148,7 @@ Due to hardware limitations training Bidirectional LSTM is difficult if the leng
     \label{fig:FlowResearchQuestion1}
 \end{figure}
 
-Two LSTM models are trained to see the effects of clustering. The training workflow for the Bidirectional LSTM (with clustering) is shown below in \ref{fig:clusterFlowClassification},
+The training workflow for the Bidirectional LSTM (with clustering) is shown below in \ref{fig:clusterFlowClassification}, 
 
 \begin{figure}[!ht]
     \centering
@@ -148,8 +159,28 @@ Two LSTM models are trained to see the effects of clustering. The training workf
 
 \subsubsection*{Evaluation} \label{evaluationQuestionOne}
 The SVMs are trained on full documents and the LSTMs are trained on the sentences created using the  sliding window technique, for this reason, the results from both the models can not be compared. Ferguson et al.,(2009) \cite{ferguson2009exploring} preformed sentiment analysis of the financial blogs on paragraph-level 
-annotated text, they summed up the predictions given by the classifier. In our case, the classifier will give probability to each sentence belonging to each class. As each document comprises of sentences, if we add all the probabilities for each class across all the sentences of a document we get probabilities of each class for that document and then we choose the class with highest probability.
+annotated text, they summed up the predictions given by the classifier. In our case, the classifier will give probability to each sentence belonging to each class. As each document comprises of sentences, if we add all the probabilities for each class across all the sentences of a document we get probabilities of each class for that document and then we choose the class with highest probability. The classification algorithm trained on clustered data would yield two different sets of predictions,i.e one for first cluster and one for the second cluster these scores will then be averaged to get the scores of the classification model on the whole dataset.
+
+The \ref{table:ListQuestionFirstQuestion} below lists all the classification algorithms for the first research question,
+
 \clearpage
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{>{\centering\arraybackslash}m{3cm}>{\centering\arraybackslash}m{3cm}>{\centering\arraybackslash}m{1.5cm}>{\centering\arraybackslash}m{2.3cm}>{\centering\arraybackslash}m{3cm}}
+\hline
+\textbf{Classification Algorithm} & \textbf{Text Representation} & \textbf{Corpus} & \textbf{Type of training} & \textbf{Evaluation Strategy} \\ [0.2cm]\hline
+Support Vector Machines & TF-IDF & English & Non Clustered & Document Level \\[0.3cm]
+Bidirectional LSTM & Monolingual word embeddings (Legal Text) & English & Non Clustered & Document Level and Sentence Level \\[0.3cm]
+Bidirectional LSTM & Bilingual word embedding (Legal Text) & English and German & Non Clustered & Document Level and Sentence Level \\[0.3cm]
+Bidirectional LSTM & Bilingual word embedding (Legal Text) & English and German & Clustered & Document Level and Sentence Level \\ \hline
+\end{tabular}
+\caption{Classification algorithms for the first research question}
+\label{table:ListQuestionFirstQuestion}
+\end{table}
+
+
+
 \subsection{Research Question 2:} \label{question2}
 The second research question is:
 
@@ -164,13 +195,24 @@ The second research question is:
     \label{fig:FlowResearchQuestion2}
 \end{figure}
 
-\ref{fig:FlowResearchQuestion2} shows the general workflow for the second question we compare the general purpose resources, that is word embeddings for training LSTM, with the word embeddings trained on legal corpus. Facebook's Fasttext\footnote{https://fasttext.cc/docs/en/crawl-vectors.html}\cite{graves2009novel} provides word vectors in 157 languages on Wikipedia\footnote{https://www.wikipedia.org/} and Common Crawl\footnote{http://commoncrawl.org/} data and is trained using Continuous bag-of-words model in dimension 300, with character n-grams of length 5, a window of size 5 and 10 negatives. But as the word embeddings for multiple languages can not be combined together because they belong in different vector space. Facebook's MUSE\footnote{https://github.com/facebookresearch/MUSE} \cite{conneau2017word} with help of parallel dictionaries was used to align them in a single vector space. After this both embeddings can be simply concatenated and can be used for classification purpose. These word embeddings are created from various sources, it contains text from various domains and hence it will henceforth be refereed to as general purpose word embeddings.
+\ref{fig:FlowResearchQuestion2} shows the general workflow for the second question. For this question we compare the general purpose resources, that is word embeddings for training the LSTM, with the word embeddings trained on the legal corpus. 
 
-For creating domain specific word embeddings Duong et al.(2016)\cite{duong-EtAl:2016:EMNLP} proposed learning bilingual word embedding without without bilingual Corpora\cite{duong-EtAl:2016:EMNLP}. They also make use of parallel bilingual dictonaries and use Continuous bag-of-word model to create these embeddings. These word embeddings are however in a single vector space.
+As the domain specific word embeddings are create using legal domain specific data this word embedding will not be further trained. In case of general purpose word embeddings two models will be trained - one with frozen embedding layer and other model will train the word embeddings. This is done to see if further training the general purpose word embeddings produces results comparable to the ones trained on legal data.
 
-As the domain specific word embeddings are create using legal domain specific data this word embedding will not be further trained. In case of general purpose word embeddings two models will be trained - one with frozen embedding layer and other model will train the word embeddings. This is done to see if training the general purpose word embeddings produces results comparable to the ones trained on legal data.
+\subsection*{Evaluation}
 
-Similar to the first question all the models will be trained on clustered data as shown in \ref{fig:clusterFlowClassification} and the as all the models are trained on same data and in same fashion, evaluation will also be done on sentence level and on document level similar to question 1 (See \ref{evaluationQuestionOne}).
+Similar to the first question, the classification models will be trained on sentences for English and German corpus, hence all the models will be evaluated on document level and sentence level with macro-average precision, recall and f1-score performance matrices. All the classification models will be trained on clustered data in the similar way as shown in the  \ref{fig:clusterFlowClassification}. As the training is done on the clustered data, the scores of the performance matrices will be averaged together similar to the evaluation done in question 1.
+
+The \ref{table:ListQuestionFirstQuestion} below lists all the classification algorithms for the second research question,
+\begin{table}[!ht]
+\begin{tabular}{>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{2.9cm}>{\centering\arraybackslash}m{1.8cm}>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{1.9cm}>{\centering\arraybackslash}m{2cm}}
+\hline
+\textbf{Classification Algorithm} & \textbf{Word Embeddings} & \textbf{Embedding Training} & \textbf{Corpus} & \textbf{Type of training} & \textbf{Evaluation Strategy} \\ \hline
+Bidirectional LSTM & Domain specific (Legal Text) & False & English and German & Non Clustered & Document Level and Sentence Level \\
+Bidirectional LSTM & General Purpose (Facebook's MUSE) & False & English and German & Non Clustered & Document Level and Sentence Level \\
+Bidirectional LSTM & General Purpose (Facebook's MUSE) & True & English and German & Clustered & Document Level and Sentence Level \\ \hline
+\end{tabular}
+\end{table}
 
 \subsection{Research Question 3:} \label{question3}
 
