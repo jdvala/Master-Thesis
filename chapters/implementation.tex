@@ -47,12 +47,15 @@ The order of the steps is also important as it will help in reducing the overloa
 
 For removing the stop words Python library \textit{NLTK}\footnote{https://www.nltk.org/} (Natural Language Toolkit) is used. It provides stop words in both English and German language. To lemmatize the words \textit{spaCy}\footnote{https://spacy.io/} library is used for both the languages. To remove unnecessary symbols, custom functions were written. Number removal and conversion of umlauts were also done using custom functions.
 
+\iffalse
+
+
 \subsection{Data Preprocessing for pretrained word embeddings}
 Pretrained word embeddings are generated using larger corpora, hence they can be used for variety of task in natural language processing. These models are trained on corpora that have no specific domain. Legal text is different from the corpora these models are trained on such that the some words we find in legal text are rarely used outside the legal domain. 
 
 Facebook's MUSE multilingual word embeddings \cite{conneau2017word} were trained on large corpus \ref{backgroundCrosslingual}. These word embeddings are created by learning a mapping between the two sets of monolingual word embeddings.\todo{have to write what methods were used to create these} The monolingual word embedding used in were created using fastText \cite{bojanowski2017enriching}. These pretrained vectors were trained on Common Crawl and Wikipedia Coprus. There was no preprocessing involved except for lower casing the words. Hence, to use these word embeddings, I need to use the corpus with only lower case words and avoid all the preprocessing mentioned in the section in order to have the classifier learn better. If the preprocessed data is used with the embedding that were created using non processed data then even if the 
 
-
+\fi
 \section{Data Resampling} \label{dataResampling}
 The EUR-Lex summaries, are the summarised versions of legislations. These summaries are written in an abstract manner to apply for multiple situations, so that one regulation may belong to several categories. Multi-label classifier with very few examples might not be applicable as the classifier will favour majority class because of the imbalance. 
 
@@ -218,8 +221,8 @@ The \ref{} shows the cluster assignments of all the 32 categories of the EUR-Lex
 \textbf{Class Label} & \textbf{Cluster Assignment} \\ \hline
 Agriculture & 1 \\ 
 Audiovisual and Media & 1 \\ 
-Budget & 1 \\ 
-Competition & 2 \\ 
+Budget & 2 \\ 
+Competition & 1 \\ 
 Consumers & 1 \\ 
 Culture & 2 \\ 
 Customs & 2 \\ 
@@ -269,6 +272,17 @@ For creating General purpose word embedding, Facebook's MUSE python library \cit
 \section{Architecture and Training}
 This section describes in detail the specifics of architectures of the algorithm used for all the three questions mentioned in \ref{sec:conceptRQ}.
 
+Before beginning to train the models, it is necessary to divide the dataset into a training set and a testing set. Generally, 70\% of the data is for training purposes, and 30\% to evaluate the model. This division is stratified, which means that the class distribution in training, and testing set will remain almost equal. The stratified division ensures that there are enough examples for each class in training, and test phase of the model. 
+
+Neural network based classification models are prone to \textit{overfitting} \cite{Prechelt1998}. Overfitted model will perform well on the training data but fail to perform well on the testing data. To put it simply, the error on the training set will keep on decreasing while the error on the unseen data starts getting worst. To avoid this situation regularization techniques such as Dropout, L1 and L2 regularization and early stopping is used.
+
+Dropout and L1, L2 regularization are explicit regularization technique, that is it explicitly reduces the model complexity. In Dropout regularization techniques, during the training, a fraction of randomly selected neurons are ignored. Hence, their activation contribution to the forward pass and weight updates are removed. While Dropout regularization reduces the model complexity by removing randomly selected neuron during training, L1 and L2 regularization reduces the model complexity by imposing penalty to the weight of all the features and features with non zero weights respectively.      
+
+On the other hand early stopping regularization is implicit which does not affect the complexity of the model directly \cite{zhang2016understanding}. Early stopping, monitors the training process and halts it once the performance of the model starts degrading. It does so by monitoring validation data. 
+
+
+Dropout, L2 regularization and early stopping can be configured in \textit{keras} while building the model. During the training we split 30\% of training data for validation purpose so that there is no need for splitting validation data at the time when we split the dataset into training and testing.
+
 \subsection{Question 1} \label{impQuestion1}
 
 In the first research question Support Vector Machines are compared to Bidirectional LSTMs. When using an SVM algorithm we do not know beforehand the value of $C$ (See \ref{sec:svm}). To find that out, we need some kind of selection mechanism must be done. The aim is to find out the value of $C$ such that it can predict accurately on unknown data. One method of finding the value of $C$ is called \textit{Grid Search Cross Validation} (Grid Search CV). This method is straight forward, first we select the a number of values of $C$, then we divide the training set into $n$ equal sized subsets. Then we train the SVM using one value from $C$ on the $n-1$ subset and predict using 1 subset that left, we repeat this process until each and every instance of the training set is predicted once and for every value of $C$.
@@ -279,7 +293,7 @@ To train SVM, TF-IDF matrix of the English corpus is created using the \textit{s
 
 The SVM is compared against two Bidirectional LSTM models, one without clustered data on single language (English) and one with clustered data (English and German). The data used for training both SVM and Bidirectional LSTM is different, while SVM is trained on whole documents, Bidirectional LSTMs are trained on sentences created using sliding window technique (see \ref{backgroundSlidingWindow}, \ref{question1}). The \ref{fig:PlainLSTM} shows the architecture of the Bidirectional LSTM model trained on English corpus with all the 32 classes. The Bidirectional LSTM models were created using \textit{Keras}\footnote{https://keras.io/} python library. 
 
-The hyperparameter for Bidirectional LSTM training on English corpus without clustered data is listed in \ref{table:hyperparameterLSTM32class}
+The hyperparameter for Bidirectional LSTM training on English corpus without clustered data is listed in \ref{table:hyperparameterLSTM32class}. 
 
 \begin{table}[!ht]
 \centering

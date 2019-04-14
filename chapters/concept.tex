@@ -22,8 +22,8 @@ Legal text is different from other text available because of the style, structur
 \section{Phase 2: Data Clustering and Resampling}
 %\todo{have to mention clustering first and then resampling}
 In the second phase, data was first cluster the data, and then applied the resampling techniques in order to prepare the data for training in the next phase.
-\subsection*{Data Clustering}
-As the initial step after preprocessing the data, the data was divided into $n$ groups. The division was so that all documents $d$ of a category $C_{l}$ will be grouped together in the same cluster $K_{n}$ via must-link constrains.
+\subsection*{Data Clustering}\label{concpeClustering}
+As the initial step after preprocessing the data, the data was divided into $n$ groups. To find the number of groups that the data must be divided into, Silhouette Score and Elbow Analysis is to be performed  as described in \ref{chooseK}. The division was so that all documents $d$ of a category $C_{l}$ will be grouped together in the same cluster $K_{n}$ via must-link constrains.
 
 %\begin{align}
    % C_{t} = U_{S\in I_{l}}d_{S} \Rightarrow \exists!K_{n}  \forall_{S} \in I_{S} : d_{S} \in K_{n}
@@ -116,15 +116,15 @@ In \ref{table:SamplesDistributionDataResamplingExampleAfterResampling} class 5 b
 
 This method of resampling has its own limitation. As the samples from majority class is removed and only kept in minority class, the majority class is loosing information about that sample. If the data in a class is diverse, that is, if every sample of that class is unique then applying this technique would result into loss of a that unique representation of the class.
 
-\subsection*{Training Word Vectors}
+\subsection*{Monolingual and Bilingual Word Embeddings}
 
 Training the word embeddings is the last step of the second phase. Monolingual word embeddings for training Bidirectional LSTM is trained using \textit{Skip-gram} method using Fasttext\footnote{https://fasttext.cc/docs/en/crawl-vectors.html}\cite{graves2009novel} tool. These embedding were trained on EUR-Lex corpus rather than EUR-Lex summaries dataset as the EUR-Lex summaries dataset is considered less to train satisfactory results. These monolingual word embeddings are in English Language and are in 300 dimensions
 
-For training general purpose multilingual word embedding we will be again using Fasttext which provides word vectors in 157 languages on Wikipedia\footnote{https://www.wikipedia.org/} and Common Crawl\footnote{http://commoncrawl.org/} data and is trained using Continuous bag-of-words model in dimension 300. But as the word embeddings for multiple languages can not be combined together because they belong in different vector space. Facebook's MUSE\footnote{https://github.com/facebookresearch/MUSE} \cite{conneau2017word} with help of parallel dictionaries was used to align both word vectors into a single vector space. Upon alignment, both the embeddings (English and German) can be simply concatenated and can be used for classification purpose. These word embeddings are created from various sources, it contains text from various domains and hence it will henceforth be refereed to as general purpose word embeddings.
+For training general purpose multilingual word embedding we will be again using Fasttext which provides word embeddings in 157 languages on Wikipedia\footnote{https://www.wikipedia.org/} and Common Crawl\footnote{http://commoncrawl.org/} data and is trained using Continuous bag-of-words model in dimension 300. But as the word embeddings for multiple languages can not be combined together because they belong in different vector space. Facebook's MUSE\footnote{https://github.com/facebookresearch/MUSE} \cite{conneau2017word} with help of parallel dictionaries was used to align both word embeddings into a single vector space. Upon alignment, both the embeddings (English and German) can be simply concatenated and can be used for classification purpose. These word embeddings are created from various sources, it contains text from various domains and hence it will henceforth be refereed to as general purpose word embeddings.
 
 For training domain specific word embeddings, we will use method proposed by Duong et al.(2016)\cite{duong-EtAl:2016:EMNLP} for learning bilingual word embedding without without bilingual Corpora. They also make use of parallel bilingual dictonaries and use Continuous bag-of-word model to create these embeddings. These word embeddings are however in a single vector space unlike Fasttext word embeddings which were aligned later.
 
-The details of the training the word vectors will be discussed in the next chapter.
+The details of the training the word embeddings will be discussed in the next chapter.
 
 \section{Phase 3: Model Architecture and Training}\label{sec:conceptRQ}
 The third phase goes into details regarding the conceptual aspect of the three research questions. It will also detail how the dataset was created for all the research question and what all evaluation strategies were employed for comparison. 
@@ -139,7 +139,7 @@ The first research question is:
 
 \ref{fig:FlowResearchQuestion1} shows the approach employed for the above mentioned research question. After acquiring the data from EUR-Lex website, the data was cleaned or prepossessed (see \ref{ConceptCleaning}). Upon preprocessing, the textual data needs to be converted using suitable text representations technique according to the algorithm it will be trained on. Here, there are two algorithms being tested, Support Vector Machines (SVM) and Bidirectional LSTM, and both of them employ different techniques to represent text for training (See \ref{backgroundTextRepresentation}). The SVM uses the TF-IDF representation whereas the LSTM uses the Word Embeddings. 
  
-Due to hardware limitations training Bidirectional LSTM is difficult if the length of a single instance is very long. Hence each document was divided into sentences using sliding window technique (See \ref{backgroundSlidingWindow}) and document label were assigned to each sentence created from that document. 
+Due to hardware limitations training Bidirectional LSTM is difficult to train if the length of a single instance is very long. Hence each document was divided into sentences using sliding window technique (See \ref{backgroundSlidingWindow}) and document label were assigned to each sentence created from that document. 
 
 \begin{figure}[!ht]
     \centering
@@ -148,7 +148,7 @@ Due to hardware limitations training Bidirectional LSTM is difficult if the leng
     \label{fig:FlowResearchQuestion1}
 \end{figure}
 
-The training workflow for the Bidirectional LSTM (with clustering) is shown below in \ref{fig:clusterFlowClassification}, 
+To see the effect of clustering on the data for classification purpose, one classification model will be trained on clustered data. The clustered data will contain documents from corpora of both the languages, this is because clustering on corpus of a single language will result in very less data for the clusters. This will show us if there is any improvement in classification performance of the classifier with the specialization advantage discussed in \ref{concpeClustering}. The classifier will then be trained on these clusters of data. The training workflow for the Bidirectional LSTM (with clustering) is shown below in \ref{fig:clusterFlowClassification}, 
 
 \begin{figure}[!ht]
     \centering
@@ -171,9 +171,9 @@ The \ref{table:ListQuestionFirstQuestion} below lists all the classification alg
 \hline
 \textbf{Classification Algorithm} & \textbf{Text Representation} & \textbf{Corpus} & \textbf{Type of training} & \textbf{Evaluation Strategy} \\ [0.2cm]\hline
 Support Vector Machines & TF-IDF & English & Non Clustered & Document Level \\[0.3cm]
-Bidirectional LSTM & Monolingual word embeddings (Legal Text) & English & Non Clustered & Document Level and Sentence Level \\[0.3cm]
-Bidirectional LSTM & Bilingual word embedding (Legal Text) & English and German & Non Clustered & Document Level and Sentence Level \\[0.3cm]
-Bidirectional LSTM & Bilingual word embedding (Legal Text) & English and German & Clustered & Document Level and Sentence Level \\ \hline
+Bidirectional LSTM & Monolingual Word Embeddings (Legal Text) & English & Non Clustered & Document Level and Sentence Level \\[0.3cm]
+Bidirectional LSTM & Bilingual Word Embedding (Legal Text) & English and German & Non Clustered & Document Level and Sentence Level \\[0.3cm]
+Bidirectional LSTM & Bilingual Word Embedding (Legal Text) & English and German & Clustered & Document Level and Sentence Level \\ \hline
 \end{tabular}
 \caption{Classification algorithms for the first research question}
 \label{table:ListQuestionFirstQuestion}
@@ -197,21 +197,23 @@ The second research question is:
 
 \ref{fig:FlowResearchQuestion2} shows the general workflow for the second question. For this question we compare the general purpose resources, that is word embeddings for training the LSTM, with the word embeddings trained on the legal corpus. 
 
-As the domain specific word embeddings are create using legal domain specific data this word embedding will not be further trained. In case of general purpose word embeddings two models will be trained - one with frozen embedding layer and other model will train the word embeddings. This is done to see if further training the general purpose word embeddings produces results comparable to the ones trained on legal data.
+As the domain specific word embeddings are create using legal domain specific data this word embedding will not be further trained. In case of general purpose word embeddings two models will be trained - one with frozen (embedding weights will not be updated during the training process) embedding layer and other model will train the word embeddings. This is done to see if further training the general purpose word embeddings produces results comparable to the ones trained on legal data.
 
 \subsection*{Evaluation}
 
 Similar to the first question, the classification models will be trained on sentences for English and German corpus, hence all the models will be evaluated on document level and sentence level with macro-average precision, recall and f1-score performance matrices. All the classification models will be trained on clustered data in the similar way as shown in the  \ref{fig:clusterFlowClassification}. As the training is done on the clustered data, the scores of the performance matrices will be averaged together similar to the evaluation done in question 1.
-
-The \ref{table:ListQuestionFirstQuestion} below lists all the classification algorithms for the second research question,
+\clearpage
+The \ref{table:ListQuestionecondQuestion} below lists all the classification algorithms for the second research question,
 \begin{table}[!ht]
 \begin{tabular}{>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{2.9cm}>{\centering\arraybackslash}m{1.8cm}>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{1.9cm}>{\centering\arraybackslash}m{2cm}}
 \hline
 \textbf{Classification Algorithm} & \textbf{Word Embeddings} & \textbf{Embedding Training} & \textbf{Corpus} & \textbf{Type of training} & \textbf{Evaluation Strategy} \\ \hline
-Bidirectional LSTM & Domain specific (Legal Text) & False & English and German & Non Clustered & Document Level and Sentence Level \\
-Bidirectional LSTM & General Purpose (Facebook's MUSE) & False & English and German & Non Clustered & Document Level and Sentence Level \\
-Bidirectional LSTM & General Purpose (Facebook's MUSE) & True & English and German & Clustered & Document Level and Sentence Level \\ \hline
+Bidirectional LSTM & Domain specific Bilingual(Legal Text) & False & English and German & Non Clustered & Document Level and Sentence Level \\
+Bidirectional LSTM & General Purpose Bilingual(Facebook's MUSE) & False & English and German & Non Clustered & Document Level and Sentence Level \\
+Bidirectional LSTM & General Purpose Bilingual(Facebook's MUSE) & True & English and German & Clustered & Document Level and Sentence Level \\ \hline
 \end{tabular}
+\caption{Classification algorithms for the second research question}
+\label{table:ListQuestionSecondQuestion}
 \end{table}
 
 \subsection{Research Question 3:} \label{question3}
@@ -226,7 +228,7 @@ The third research question is:
 
 In this research question, first two separate classifiers will be trained on two different languages namely, \textit{English} and \textit{German}. The results from both of them will be combined to get the average performance (we will average the macro-average precision, recall, and f-score across both the models) of classification of these two classifiers. The training and evaluation of these classifiers will be similar to the training done in question 1 and 2. This performance of the two classifiers will then be compared to a single classifiers that will be trained on both the languages with multilingual word embeddings.
 
-The training of all the classifiers for this question will be done in the similar fashion as show in \ref{fig:clusterFlowClassification}.
+The training of all the classifiers for this question will be done in the similar fashion as show in \ref{fig:clusterFlowClassification}, and \ref{table:ListQuestionThirdQuestion} below lists all the classification algorithms for the third research question,
 
 
 \begin{figure}[!ht]
@@ -235,6 +237,21 @@ The training of all the classifiers for this question will be done in the simila
     \caption{Flow chart representing the workflow for the third research question}
     \label{fig:FlowResearchQuestion3}
 \end{figure}
+
+\begin{table}[!ht]
+\begin{tabular}{>{\centering\arraybackslash}m{2.9cm}>{\centering\arraybackslash}m{2.9cm}>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{2.6cm}}
+\hline
+\textbf{Classification Algorithm} & \textbf{Word Embeddings} & \textbf{Corpus} & \textbf{Type of training} & \textbf{Evaluation Strategy} \\ \hline
+Bidirectional LSTM & Monolingual Domain Specific (Legal Text) & English & Non Clustered & Document Level \&  Sentence Level \\ [0.2cm]
+Bidirectional LSTM & Monolingual Domain Specific (Legal Text) & German & Non Clustered & Document Level \&  Sentence Level \\[0.2cm]
+
+Bidirectional LSTM & Bilingual Domain Specific (Legal Text) & English and German & Clustered & Document Level \&  Sentence Level \\ \hline
+\end{tabular}
+\caption{Classification algorithms for the third research question}
+\label{table:ListQuestionThirdQuestion}
+\end{table}
+
+\subsection*{Evaluation}
 
 For the evaluation, the multilingual classifier is evaluated on summation of predictions from the sentences of each document for each class. Also, both of the monolingual classifiers will be evaluated on summation of the predictions from the sentences of each document of each class but these results will then be averaged to be able to compare it with the multilingual classifier also to see how they perform on sentence level the evaluation will also consider the results on sentence level.
 

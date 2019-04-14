@@ -15,6 +15,8 @@
 \usepackage{caption}
 \usepackage{array}
 \usepackage{multirow}
+\usepackage[normalem]{ulem}
+\useunder{\uline}{\ul}{}
 %****************************************https://www.overleaf.com/project/5bf3df67d5a222068c001d80*****************************%
 % META                                                                %
 %*********************************************************************%
@@ -22,7 +24,7 @@
 % available profiles: ovgu, tubs, tubs_isf
 \input{tex/profiles/ovgu.tex}
 
-\newcommand{\advisorone}{Prof. \ {Gunter Saake}}
+\newcommand{\advisorone}{Prof. \ {Dr. rer. nat. habil. Gunter Saake}}
 \newcommand{\departmentone}{\ifgerman{Institut für}{Institute for}Technical and Operational Information Systems}
 
 \newcommand{\advisortwo}{}
@@ -42,7 +44,7 @@
 }{
 	\newcommand{\theforename}{Jay Dilipbhai}
 	\newcommand{\thesurname}{Vala}
-	\newcommand{\thetitle}{Classification of Legal Text Using Deep Learning: Evaluation of General-Purpose Resources for a Legal Domain-Specific Task}
+	\newcommand{\thetitle}{Classification of multilingual legal text Using deep learning: Evaluation of General-Purpose Resources for a Legal Domain-Specific Task}
 	\newcommand{\thedate}{}
 	
 }
@@ -153,8 +155,8 @@
 \include{chapters/concept}
 \include{chapters/implementation}
 \include{chapters/evaluation}
-\include{chapters/relatedwork}
 \include{chapters/conclusion}
+\include{chapters/relatedwork}
 %\include{chapters/futurework}
 
 %*********************************************************************%

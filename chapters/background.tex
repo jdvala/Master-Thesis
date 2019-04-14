@@ -1,11 +1,10 @@
 \ifgerman{\chapter{Grundlagen}}{\chapter{Background}}
 \label{ch:background}
 
-This chapter covers the background  
-
+This chapter covers the fundamentals of document classification, how machine learning can be applied for document classification. Furthermore, this chapter will provide an overview of various machine learning, deep learning, and evaluation concepts.  This chapter will also describe the concepts of different classification algorithms employed. 
 
 \section{Document Categorization}
-Due to the internet, we have access to an enormous amount of resources online. Governments, universities and other organizations constantly publish new documents which are hard to oversee. Organization and categorization of these documents is therefore important now more than ever. Due to organizations operating in different geographies, documents publish by them are available in multiple languages and are from different domains which makes it more difficult to categorize and retrieve them. For example, European Union publishes document in all the 24 official languages, big multinational companies like Volkswagen cars are present in 150 markets and are manufactured in more than 14 countries. Document categorization or Document classification is the analysis and assignment of documents into some predefined classes. Categorization is an important part of document retrieval as without categorization it is impossible to label the document and know when to present it to the user in response to the search query. Manually assigning these document (also refereed as indexing) is not feasible due to the continuous addition of new documents every day.
+Due to the internet, we have access to an enormous amount of resources online. Governments, universities and other organizations regularly publish new documents which are hard to oversee. Organization and categorization of these documents are therefore important now more than ever. Due to organizations operating in different geographies, documents publish by them are available in multiple languages and are from different domains which make it more difficult to categorize and retrieve them. For example, the European Union publishes the documents in all the 24 official languages, big multinational companies like Volkswagen cars are present in 153 countries\footnote{https://www.volkswagenag.com/en/group/portrait-and-production-plants.html}. Document categorization also known as Document classification is the analysis and assignment of documents into some predefined classes. Categorization is an essential part of document retrieval as without categorization it is impossible to label the document and know when to present it to the user in response to the search query. Manually assigning these document (also referred to as indexing) is not feasible due to the continuous addition of new documents every day
 
 Classification of documents was first introduced by Luhn for creating abstracts in technical resources. Luhn proposed using statistical analysis of word occurrences in the abstract and title of the literature to assign it to a predefined category \cite{luhn1958automatic}. Many early adaptations of document categorization techniques relied upon carefully hand-crafted features \cite{Hayes:1990:CSC:645450.653070, Biebricher:1988:AIS:62437.62470}
 
@@ -71,7 +70,7 @@ This is a modified version of K-means clustering with the above mentioned constr
 \todo{example}
 
 
-\subsection{Choosing $k$}
+\subsection{Choosing $k$} \label{chooseK}
 To produce high quality clusters, the number of clusters ($k$) that the data needs to be divided into should be known. \textit{Silhouette Score} \cite{rousseeuw1987silhouettes} and \textit{Elbow Analysis} \cite{thorndike1953belongs,ketchen1996application}  are two methods to find out the number of clusters.
 
 \todo{write more}
