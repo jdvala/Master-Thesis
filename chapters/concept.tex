@@ -9,9 +9,12 @@ In the first phase, the data collection techniques are desribed in detail, also 
 \subsection*{Data Collection}
 Legal laws are written to be applicable in various situations. For example, a law for agricultural products may be applicable in cases where trading of goods happens.  High-level categories of multilingual legal documents provided by the European Union help to navigate in the legislative corpus. They are also comprised of many languages so that is can be used by various Nations. The applicability of these legal texts in different situations makes the classification of these texts on the multi-label classification problem.
 
-There are many datasets available for legal domains. CFPB Credit Card Agreements DB\footnote{http://www.consumerfinance.gov/credit-cards/agreements/}, EUR-Lex Dataset\footnote{http://www.ke.tu-darmstadt.de/resources/eurlex} are some well known datasets for legal domain-specific tasks. However, the CFPB credit card agreements database is not available in the German language and also it is about one specific topic in the legal domain. The EUR-Lex Dataset is a large dataset available in both English and German, which was scraped from Publication's office of European Union's website \cite{mencia2010efficient}. This dataset consists of 19,348 documents for a single language divided into 201 topics. This dataset was too large to handle as there are 201 classes and given the amount of resources available to scrap, process and train the models. So instead EUR-Lex summaries were selected. This EUR-Lex Summaries\footnote{https://eur-lex.europa.eu/browse/summaries.html} are also from the Publication office of European Union's Parliament. These summaries are the European Union's laws explained and translated into reader-friendly language. They cover 32 topics which correspond to the activity areas of the European Union. These summaries are available in multiple languages. For this thesis, only \textit{English and German} languages are considered due to their availability across most documents and also the amount of resource available for processing and training the machine learning algorithms were limited. The summaries are not available in an easy click to download manner, and hence it has to be scraped off of the website of the European Union's publication office's website. These summaries frequently change as the laws of the union changes or if a new law is introduced and as stated above these summaries might belong to multiple classes. 
+There are many datasets available for legal domains. CFPB Credit Card Agreements DB\footnote{http://www.consumerfinance.gov/credit-cards/agreements/}, EUR-Lex Dataset\footnote{http://www.ke.tu-darmstadt.de/resources/eurlex} are some well known datasets for legal domain-specific tasks. However, the CFPB credit card agreements database is not available in the German language and also it is about one specific topic in the legal domain. The EUR-Lex Dataset is a large dataset available in both English and German, which was scraped from Publication's office of European Union's website \cite{mencia2010efficient}. This dataset consists of 19,348 documents for a single language divided into 201 topics. This dataset was too large to handle as there are 201 classes and given the amount of resources available to scrap, process and train the models. So instead EUR-Lex summaries were selected. This EUR-Lex Summaries\footnote{https://eur-lex.europa.eu/browse/summaries.html} are also from the Publication office of European Union's Parliament. These summaries are the European Union's laws explained and translated into reader-friendly language. They cover 32 topics which correspond to the activity areas of the European Union. These summaries are available in multiple languages. The EUR-Lex summaries dataset is highly imbalanced data. For this thesis, only \textit{English and German} languages are considered due to their availability across most documents and also the amount of resource available for processing and training the machine learning algorithms were limited. The summaries are not available in an easy click to download manner, and hence it has to be scraped off of the website of the European Union's publication office's website. These summaries frequently change as the laws of the union changes or if a new law is introduced and as stated above these summaries might belong to multiple classes. 
 
 While scraping the summaries, data from both languages need to be scraped together. This ensures that we are not missing out any summary from either of the languages. Saving the summaries from different languages separately would create the problem of data leaking, which is the result of splitting data randomly for training and testing. For example, \textbf{Doc A} which belongs to \textbf{class 1} in English and \textbf{Doc B} which is same but in German. Now, when spitting the data for training and testing \textbf{Doc A} might end up in the training set, and \textbf{Doc B} might end up in the testing set. 
+
+
+
 
 \subsection*{Data Cleaning}\label{ConceptCleaning}
 
@@ -37,7 +40,7 @@ When splitting the data in this manner, the number of classes to be predicted by
 
 As in many real world applications, data is in skewed distribution and EUR-Lex summaries are no exception. Skewed distribution is when we have more samples in one class then others \cite{wang2012multiclass}. Skewed distribution also know as class imbalance in data is a difficult situation for classifier to learn from as the classifier are biased towards the majority classes and shows poor performance on minority classes. Also, the performance of these classifiers is evaluated using accuracy, which is not a good metric to evaluate the performance of these classifier \cite{chawla2002smote}.  
 
-To handle the imbalances in the dataset various techniques have been proposed. \textit{Oversampling} and \textit{Undersampling} are the two most common ones. Oversampling refers to the process of increasing the number of instances in the minority classes and Undersampling is when we remove instances from the majority class to even out the dataset. Undersampling in our case would mean that we reduce the instances from the majority classes which are as it less to being with. For oversampling the domain specific and limited dataset, I could not find works using artificial techniques such as SMOTE to enhance the data. 
+To handle the imbalances in the dataset various techniques have been proposed. \textit{Oversampling} and \textit{Undersampling} are the two most common ones. Oversampling refers to the process of increasing the number of instances in the minority classes and Undersampling is when we remove instances from the majority class to even out the dataset. Undersampling in our case would mean that we reduce the instances from the majority classes which are as it less to being with. For oversampling the domain-specific and limited dataset, I could not find works using artificial techniques such as SMOTE to enhance the data. 
 \todo{SMOTE visual on 90 10 dataset}
 
 The EUR-Lex summaries are multi-label, this is generally the case with legal text as a single case may be applicable in many situations. So having multiple labels for a single document can be exploited to alleviate the problem of class imbalance. The sampling of the documents is done in such a way that it reduces samples from the majority classes on the bases of its presence in the minority classes. Hence, a document will be labeled with the class with fewest examples. 
@@ -114,18 +117,12 @@ Doc E           & 2 or 5                  \\ \hline
 
 In \ref{table:SamplesDistributionDataResamplingExampleAfterResampling} class 5 becomes either 0 or 1
 
-This method of resampling has its own limitation. As the samples from majority class is removed and only kept in minority class, the majority class is loosing information about that sample. If the data in a class is diverse, that is, if every sample of that class is unique then applying this technique would result into loss of a that unique representation of the class.
+This method of resampling has its own limitation. As the samples from majority class is removed and only kept in minority class, the majority class is loosing information about that sample. If the data in a class is diverse, that is, if every sample of that class is unique then applying this technique would result into loss of that unique representation of the class.
 
 \subsection*{Monolingual and Bilingual Word Embeddings}
-
-Training the word embeddings is the last step of the second phase. Monolingual word embeddings for training \gls{BiLSTM} is trained using \textit{Skip-gram} method using Fasttext\footnote{https://fasttext.cc/docs/en/crawl-vectors.html}\cite{graves2009novel} tool. These embedding were trained on EUR-Lex corpus rather than EUR-Lex summaries dataset as the EUR-Lex summaries dataset is considered less to train satisfactory results. These monolingual word embeddings are in English Language and are in 300 dimensions
-
-For training general purpose multilingual word embedding we will be again using Fasttext which provides word embeddings in 157 languages on Wikipedia\footnote{https://www.wikipedia.org/} and Common Crawl\footnote{http://commoncrawl.org/} data and is trained using Continuous bag-of-words model in dimension 300. But as the word embeddings for multiple languages can not be combined together because they belong in different vector space. Facebook's MUSE\footnote{https://github.com/facebookresearch/MUSE} \cite{conneau2017word} with help of parallel dictionaries was used to align both word embeddings into a single vector space. Upon alignment, both the embeddings (English and German) can be simply concatenated and can be used for classification purpose. These word embeddings are created from various sources, it contains text from various domains and hence it will henceforth be refereed to as general purpose word embeddings.
-
-For training domain specific word embeddings, we will use method proposed by Duong et al.(2016)\cite{duong-EtAl:2016:EMNLP} for learning bilingual word embedding without without bilingual Corpora. They also make use of parallel bilingual dictonaries and use Continuous bag-of-word model to create these embeddings. These word embeddings are however in a single vector space unlike Fasttext word embeddings which were aligned later.
+Training the word embeddings is the last step of the second phase. Three sets of word embeddings, one monolingual, one bilingual trained on legal data and another bilingual trained on general-purpose data.   
 
 The details of the training the word embeddings will be discussed in the next chapter.
-
 \section{Phase 3: Model Architecture and Training}\label{sec:conceptRQ}
 The third phase goes into details regarding the conceptual aspect of the three research questions. It will also detail how the dataset was created for all the research question and what all evaluation strategies were employed for comparison. 
 
@@ -195,9 +192,9 @@ The second research question is:
     \label{fig:FlowResearchQuestion2}
 \end{figure}
 
-\ref{fig:FlowResearchQuestion2} shows the general workflow for the second question. For this question we compare the general purpose resources, that is word embeddings for training the \gls{BiLSTM}, with the word embeddings trained on the legal corpus. 
+\ref{fig:FlowResearchQuestion2} shows the general workflow for the second question. For this question we compare the general-purpose resources, that is word embeddings for training the \gls{BiLSTM}, with the word embeddings trained on the legal corpus. 
 
-As the domain specific word embeddings are create using legal domain specific data this word embedding will not be further trained. In case of general purpose word embeddings two models will be trained - one with frozen (embedding weights will not be updated during the training process) embedding layer and other model will train the word embeddings. This is done to see if further training the general purpose word embeddings produces results comparable to the ones trained on legal data.
+As the domain-specific word embeddings are create using legal domain-specific data this word embedding will not be further trained. In case of general-purpose word embeddings two models will be trained - one with frozen (embedding weights will not be updated during the training process) embedding layer and other model will train the word embeddings. This is done to see if further training the general-purpose word embeddings produces results comparable to the ones trained on legal data.
 
 \subsection*{Evaluation}
 
@@ -208,9 +205,9 @@ The \ref{table:ListQuestionecondQuestion} below lists all the classification alg
 \begin{tabular}{>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{2.9cm}>{\centering\arraybackslash}m{1.8cm}>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{1.9cm}>{\centering\arraybackslash}m{2cm}}
 \hline
 \textbf{Classification Algorithm} & \textbf{Word Embeddings} & \textbf{Embedding Training} & \textbf{Corpus} & \textbf{Type of training} & \textbf{Evaluation Strategy} \\ \hline
-\gls{BiLSTM} & Domain specific Bilingual(Legal Text) & False & English and German & Non Clustered & Document Level and Sentence Level \\
-\gls{BiLSTM} & General Purpose Bilingual(Facebook's MUSE) & False & English and German & Non Clustered & Document Level and Sentence Level \\
-\gls{BiLSTM} & General Purpose Bilingual(Facebook's MUSE) & True & English and German & Clustered & Document Level and Sentence Level \\ \hline
+\gls{BiLSTM} & domain-specific Bilingual(Legal Text) & False & English and German & Non Clustered & Document Level and Sentence Level \\
+\gls{BiLSTM} & general-purpose Bilingual(Facebook's MUSE) & False & English and German & Non Clustered & Document Level and Sentence Level \\
+\gls{BiLSTM} & general-purpose Bilingual(Facebook's MUSE) & True & English and German & Clustered & Document Level and Sentence Level \\ \hline
 \end{tabular}
 \caption{Classification algorithms for the second research question}
 \label{table:ListQuestionSecondQuestion}
@@ -242,10 +239,10 @@ The training of all the classifiers for this question will be done in the simila
 \begin{tabular}{>{\centering\arraybackslash}m{2.9cm}>{\centering\arraybackslash}m{2.9cm}>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{2.6cm}}
 \hline
 \textbf{Classification Algorithm} & \textbf{Word Embeddings} & \textbf{Corpus} & \textbf{Type of training} & \textbf{Evaluation Strategy} \\ \hline
-\gls{BiLSTM} & Monolingual Domain Specific (Legal Text) & English & Non Clustered & Document Level \&  Sentence Level \\ [0.2cm]
-\gls{BiLSTM} & Monolingual Domain Specific (Legal Text) & German & Non Clustered & Document Level \&  Sentence Level \\[0.2cm]
+\gls{BiLSTM} & Monolingual domain-specific (Legal Text) & English & Non Clustered & Document Level \&  Sentence Level \\ [0.2cm]
+\gls{BiLSTM} & Monolingual domain-specific (Legal Text) & German & Non Clustered & Document Level \&  Sentence Level \\[0.2cm]
 
-\gls{BiLSTM} & Bilingual Domain Specific (Legal Text) & English and German & Clustered & Document Level \&  Sentence Level \\ \hline
+\gls{BiLSTM} & Bilingual domain-specific (Legal Text) & English and German & Clustered & Document Level \&  Sentence Level \\ \hline
 \end{tabular}
 \caption{Classification algorithms for the third research question}
 \label{table:ListQuestionThirdQuestion}

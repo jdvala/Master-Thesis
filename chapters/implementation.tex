@@ -1,4 +1,5 @@
 \ifgerman{\chapter{Implementation}}{\chapter{Implementation}}
+\label{ch:implementation}
 
 This chapter describe in detail about how data was collected, what preprocessing techniques were applied to the data in order to make it fit for machine learning algorithm to learn from, how data was resampled in order to balance it to some extent, how it was clustered and what are the details of the architecture of the models and what are the evaluation strategies applied.
 
@@ -8,8 +9,116 @@ To begin with the implementation, the first step was to obtain the data. Obtaini
 
 For scraping the data, Python library \textit{urllib}\footnote{https://docs.python.org/3/library/urllib.html} is used, this scraps the HTML data out of the desired web page. Then Python library \textit{Beautiful Soup}\footnote{https://www.crummy.com/software/BeautifulSoup/bs4/doc/} is used on the data collected from the web pages to parse the HTML content and produce simple text documents. During the parsing of the data, the corresponding label of the document was also parsed in order to complete the training dataset. First, the title of the document was scraped. Then all the HTML elements of the web page are removed to construct the text document. A new folder with name of the category that is the label of document is then used to store the documents of that class and each document is given the corresponding title as the name of the file.
 
-\section{Data Cleaning}\label{preprocessing}
+The EUR-Lex data set is an imbalanced data. That is the number of instances across the classes is not even as shown in \ref{fig:dataimbalance}.
 
+\begin{figure}[!ht]
+\begin{tikzpicture}
+  \centering
+  \begin{axis}[
+        ybar, axis on top,
+        %title={Cumulative Progress of Works},
+        height=10cm, width=15cm,
+        bar width=0.3cm,
+        ymajorgrids, tick align=inside,
+        major grid style={draw=white},
+        enlarge y limits={value=.1,upper},
+        ymin=0, ymax=600,
+        axis x line*=bottom,
+        axis y line*=left,
+        y axis line style={opacity=0},
+        tickwidth=0pt,
+        enlarge x limits=true,
+        legend style={
+            at={(0.5,1)},
+            anchor= north,
+            legend columns=-1,
+            /tikz/every even column/.append style={column sep=0.5cm}
+        },
+        ylabel={number of samples},
+        symbolic x coords={
+           Agriculture,
+           Audiovisual and Media,
+            Budget,
+Competition,
+Consumers,
+Culture,
+Customs,
+Development,
+Economic and Monetary Affairs,
+Education Training Youth,
+Employment and Social Policy,
+Energy,
+Enlargement,
+Enterprise,
+Environment,
+External Relations,
+External Trade,
+Fight Against Fraud,
+Food Safety,
+Foreign and Security Policy,
+Human Rights,
+Humanitarian Aid,
+Information Society,
+Institutional Affairs,
+Internal Market,
+Justice Freedom Security,
+Maritime Affairs and Fisheries,
+Public Health,
+Regional Policy,
+Research Innovation,
+Taxation,
+Transport},
+       xtick=data,
+       x tick label style={rotate=90,anchor=east},
+       %nodes near coords={
+        %\pgfmathprintnumber[precision=0]{\pgfplotspointmeta}
+       %}
+    ]
+    \addplot [draw=none, fill=blue!30] coordinates {
+     (Agriculture,116)
+(Audiovisual and Media, 23)
+(Budget, 25)
+(Competition, 49)
+(Consumers, 153)
+(Culture, 21)
+(Customs, 42)
+(Development, 96)
+(Economic and Monetary Affairs, 160)
+(Education Training Youth, 117)
+(Employment and Social Policy, 283)
+(Energy, 98)
+(Enlargement, 77)
+(Enterprise, 58)
+(Environment, 274)
+(External Relations, 84)
+(External Trade, 63)
+(Fight Against Fraud, 49)
+(Food Safety, 169)
+(Foreign and Security Policy, 54)
+(Human Rights, 31)
+(Humanitarian Aid, 43)
+(Information Society, 170)
+(Institutional Affairs, 141)
+(Internal Market, 465)
+(Justice Freedom Security, 346)
+(Maritime Affairs and Fisheries, 103)
+(Public Health, 52)
+(Regional Policy, 61)
+(Research Innovation, 61)
+(Taxation, 39)
+(Transport, 201) };
+ 
+
+    \legend{Number of samples}
+    
+  
+  \end{axis}
+  \end{tikzpicture}
+      \caption{Data Distribution of EUR-Lex summaries}
+    \label{fig:dataimbalance}
+\end{figure}
+
+\section{Data Cleaning}
 The preprocessing involved removing of \textit{punctuation's}, \textit{numbers}, \textit{currency symbols} as they do not contribute anything in the classification process. The next step is to normalize the text, this step is necessary because of the \textit{inflection} added due to the modification of words.
 
 %\todo{A figure explaining how played, plays and playing is all from the root word \textit{play} }
@@ -56,6 +165,88 @@ Pretrained word embeddings are generated using larger corpora, hence they can be
 Facebook's MUSE multilingual word embeddings \cite{conneau2017word} were trained on large corpus \ref{backgroundCrosslingual}. These word embeddings are created by learning a mapping between the two sets of monolingual word embeddings.\todo{have to write what methods were used to create these} The monolingual word embedding used in were created using fastText \cite{bojanowski2017enriching}. These pretrained vectors were trained on Common Crawl and Wikipedia Coprus. There was no preprocessing involved except for lower casing the words. Hence, to use these word embeddings, I need to use the corpus with only lower case words and avoid all the preprocessing mentioned in the section in order to have the classifier learn better. If the preprocessed data is used with the embedding that were created using non processed data then even if the 
 
 \fi
+\section{Clustering} \label{clustering}
+
+To cluster the data using K-means algorithm, first the value of $k$ is obtained using Silhouette score (see \ref{silout})  and Elbow Analysis (see \ref{elbow}). 
+
+Silhoutte score and elbow analysis is computed using \textit{scikit-learn} library. To obtain the silhoutte score and elbow analysis, first the documents from English corpus are converted into tf-idf vectors using the \textit{scikit-learn} library. These tf-idf vectors are then used for training $8$ k-means cluster which produces the cluster assignments for each value of $k$. The value 8 is heuristic as having more than 8 clusters would not be feasible in context of the amount of resources then required for training the classifiers for these clusters and also, dividing data into more than 8 cluster would leave less data for classification in those clusters. The cluster assignments are then used along with the tf-idf matrix to find the silhoutte score. Highest value of silhoutte score means better the assignment of the clusters \ref{silout}
+
+The values of silhoutte score obtained for EUR-Lex summaries are listed below in the \ref{table:silhoutteScore}
+\begin{table}[!ht]
+\centering
+\begin{tabular}{cc}
+\hline
+$k$ & Silhoutte score \\ \hline
+2 & 0.05693 \\
+3 & 0.04417 \\
+4 & 0.04749 \\
+5 & 0.05515 \\
+6 & 0.05480 \\
+7 & 0.05647 \\
+8 & 0.05537 \\ \hline
+\end{tabular}
+\caption{Silhoutte scores for 8 values of $k$}
+\label{table:silhoutteScore}
+\end{table}
+
+And the elbow analysis for the same is shown in the \ref{fig:elbowAT2}, which indicates that the data should be divided into 2 clusters. The silhoutte score is high at 2 clusters, that means that other values of $k$ will not model the data better. 
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics{pics/ElbowAT2.jpg}
+    \caption{Elbow analysis validating the value of $k$ at 2}
+    \label{fig:elbowAT2}
+\end{figure}
+
+After obtaining the value of $k = 2$ for the number of clusters, the next step is to apply constrained k-means clustering, for this an open source implementation of constrained k-means is used here called as COP-Kmeans \footnote{https://github.com/Behrouz-Babaki/COP-Kmeans} \cite{behrouz_babaki_2017_831850}. 
+
+The COP-Kmenas requires dataset, the value of k, and two list of constrains (must-link and cannot-link). As mentioned already, no prior information is available for the cannot-link constrains hence, only must-link constrains are applied. 
+
+The \ref{table:ClusterAssignments32Classes} shows the cluster assignments of all the 32 categories of the EUR-Lex summaries obtained after applying COP-Kmeans with $k=2$.
+\clearpage
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{cc}
+\hline
+\textbf{Class Label} & \textbf{Cluster Assignment} \\ \hline
+Agriculture & 1 \\ 
+Audiovisual and Media & 1 \\ 
+Budget & 2 \\ 
+Competition & 1 \\ 
+Consumers & 1 \\ 
+Culture & 2 \\ 
+Customs & 2 \\ 
+Development & 2 \\ 
+Economic and Monetary Affairs & 2 \\ 
+Education Training Youth & 2 \\ 
+Employment and Social Policy & 1 \\ 
+Energy & 1 \\ 
+Enlargement & 2 \\ 
+Enterprise & 1 \\ 
+Environment & 1 \\ 
+External Relations & 2 \\ 
+External Trade & 2 \\ 
+Fight Against Fraud & 2 \\ 
+Food Safety & 1 \\ 
+Foreign and Security Policy & 2 \\ 
+Human Rights & 2 \\ 
+Humanitarian Aid & 2 \\ 
+Information Society & 1 \\ 
+Institutional Affairs & 2 \\ 
+Internal Market & 1 \\ 
+Justice Freedom Security & 2 \\ 
+Maritime Affairs and Fisheries & 2 \\ 
+Public Health & 1 \\ 
+Regional Policy & 2 \\ 
+Research Innovation & 2 \\ 
+Taxation & 1 \\ 
+Transport & 1 \\ \hline
+\end{tabular}
+\caption{Assignment of EUR-Lex summaries into clusters}
+\label{table:ClusterAssignments32Classes}
+\end{table}
+
 \section{Data Resampling} \label{dataResampling}
 The method behind the resampling of the dataset is to loop over the dataset one by one to find duplicate documents. When a duplicate document is found, check the labels of all the duplicate documents and compare the total number of samples in all the labels for which the duplicate documents are found. Remove the duplicate instance from the class containing the most number of samples. This method is time consuming as the number of loops the algorithm goes through before finishing is $n$ x $n$ where $n$ is the number of documents.
 
@@ -104,102 +295,20 @@ Transport & 201 & 139 \\ \cline{1-3}
 \caption{Distribution of number of samples in the original dataset and after the applying the resampling}
 \label{table:befforeAfterResampling}
 \end{table}
-
-
-\section{Clustering} \label{clustering}
-
-To cluster the data using K-means algorithm, first the value of $k$ is obtained using Silhouette score (see \ref{silout})  and Elbow Analysis (see \ref{elbow}). 
-
-Silhoutte score and elbow analysis is computed using \textit{scikit-learn} library. To obtain the silhoutte score and elbow analysis, first the documents from English corpus are converted into tf-idf vectors using the \textit{scikit-learn} library. These tf-idf vectors are then used for training $8$ k-means cluster which produces the cluster assignments for each value of $k$. The value 8 is heuristic as having more than 8 clusters would not be feasible in context of the amount of resources then required for training the classifiers for these clusters and also, dividing data into more than 8 cluster would leave less data for classification in those clusters. The cluster assignments are then used along with the tf-idf matrix to find the silhoutte score. Highest value of silhoutte score means better the assignment of the clusters \ref{silout}
-
-The values of silhoutte score obtained for EUR-Lex summaries are listed below in the \ref{table:silhoutteScore}
-\begin{table}[!ht]
-\centering
-\begin{tabular}{cc}
-\hline
-$k$ & Silhoutte score \\ \hline
-2 & 0.05693 \\
-3 & 0.04417 \\
-4 & 0.04749 \\
-5 & 0.05515 \\
-6 & 0.05480 \\
-7 & 0.05647 \\
-8 & 0.05537 \\ \hline
-\end{tabular}
-\caption{Silhoutte scores for 8 values of $k$}
-\label{table:silhoutteScore}
-\end{table}
-
-And the elbow analysis for the same is shown in the \ref{fig:elbowAT2}, which indicates that the data should be divided into 2 clusters. The silhoutte score is high at 2 clusters, that means that other values of $k$ will not model the data better. 
-
-\begin{figure}[!ht]
-    \centering
-    \includegraphics{pics/ElbowAT2.jpg}
-    \caption{Elbow analysis validating the value of $k$ at 2}
-    \label{fig:elbowAT2}
-\end{figure}
-
-After obtaining the value of $k = 2$ for the number of clusters, the next step is to apply constrained k-means clustering, for this an open source implementation of constrained k-means is used here called as COP-Kmeans \footnote{https://github.com/Behrouz-Babaki/COP-Kmeans} \cite{behrouz_babaki_2017_831850}. 
-
-The COP-Kmenas requires dataset, the value of k, and two list of constrains (must-link and cannot-link). As mentioned already, no prior information is available for the cannot-link constrains hence, only must-link constrains are applied. 
-
-The \ref{table:ClusterAssignments32Classes} shows the cluster assignments of all the 32 categories of the EUR-Lex summaries obtained after applying COP-Kmeans with $k=2$.
-
-
-\begin{table}[!ht]
-\centering
-\begin{tabular}{cc}
-\hline
-\textbf{Class Label} & \textbf{Cluster Assignment} \\ \hline
-Agriculture & 1 \\ 
-Audiovisual and Media & 1 \\ 
-Budget & 2 \\ 
-Competition & 1 \\ 
-Consumers & 1 \\ 
-Culture & 2 \\ 
-Customs & 2 \\ 
-Development & 2 \\ 
-Economic and Monetary Affairs & 2 \\ 
-Education Training Youth & 2 \\ 
-Employment and Social Policy & 1 \\ 
-Energy & 1 \\ 
-Enlargement & 2 \\ 
-Enterprise & 1 \\ 
-Environment & 1 \\ 
-External Relations & 2 \\ 
-External Trade & 2 \\ 
-Fight Against Fraud & 2 \\ 
-Food Safety & 1 \\ 
-Foreign and Security Policy & 2 \\ 
-Human Rights & 2 \\ 
-Humanitarian Aid & 2 \\ 
-Information Society & 1 \\ 
-Institutional Affairs & 2 \\ 
-Internal Market & 1 \\ 
-Justice Freedom Security & 2 \\ 
-Maritime Affairs and Fisheries & 2 \\ 
-Public Health & 1 \\ 
-Regional Policy & 2 \\ 
-Research Innovation & 2 \\ 
-Taxation & 1 \\ 
-Transport & 1 \\ \hline
-\end{tabular}
-\caption{Assignment of EUR-Lex summaries into clusters}
-\label{table:ClusterAssignments32Classes}
-\end{table}
-
-\clearpage
 \section{Training the Word Vectors}
 
 The model used in creation of the word vectors is a neural network, and neural networks are data hungry as it requires a lot of data to train them properly. As a result, another domain-specific dataset is used in this experiment because dataset used for classification is small. Hence, the whole EUR-Lex dataset was used as it contains 19,348 documents mostly consisting regulations, decisions and directives of European Union \cite{jf:SemanticLaw}.
 
 \subsection{Training Cross Lingual Word Embedding}\label{implementationCrossLingual}
 
-I will be using the technique suggested by Duong et. al \cite{duong-EtAl:2016:EMNLP} (see \ref{backgroundCrosslingual}).
-The dataset used for creating a domain-specific word embeddings is the EUR-Lex dataset, as the dataset used for classification (EUR-Lex summaries) is less compared to the EUR Lex dataset. For creating bilingual dictionary, \textit{EuroVoc} thesaurus \cite{steinberger2002cross} provided by Publication office of European Union will be used. It is available in 24 official languages recognised by European Union. This thesaurus is domain-specific hence it does not involve common words that might occur in the documents. Due to this reason, this thesaurus is combined with bilingual dictionaries that are available from \textit{Facebook MUSE} \cite{conneau2017word}. This bilingual dictonaries were created using Facebook's internal translation tools. The authors claims that these dictionaries handle the polysemy of the words better. This combined bilingual dictionary with the original EUR-Lex dataset was used to create the legal domain-specific bilingual word embeddings. 
+I am using the technique suggested by Duong et. al \cite{duong-EtAl:2016:EMNLP} (see \ref{backgroundCrosslingual}) to train bilingual domain-specific word embeddigns.
+The dataset used for training the domain-specific word embeddings is the EUR-Lex dataset, as the dataset used for classification (EUR-Lex summaries) is less compared to the EUR Lex dataset. For creating bilingual dictionary, \textit{EuroVoc} thesaurus \cite{steinberger2002cross} provided by Publication office of European Union will be used. It is available in 24 official languages recognised by European Union. This thesaurus is domain-specific hence it does not involve common words that might occur in the documents. Due to this reason, this thesaurus is combined with bilingual dictionaries that are available from \textit{Facebook MUSE} \cite{conneau2017word}. This bilingual dictonaries were created using Facebook's internal translation tools. The authors claims that these dictionaries handle the polysemy of the words better. This combined bilingual dictionary with the original EUR-Lex dataset is used to create the legal domain-specific bilingual word embeddings. 
 
-For creating general-purpose word embedding, Facebook's MUSE python library \cite{conneau2017word} (see \ref{backgroundCrosslingual}) is used, first English and German language word vectors are obtained from Facebook's Fasttext library and then MUSE library align them in a single vector space, after the alignment both the vectors can be combined to be used for classification purpose. 
+Monolingual word embeddings for training \gls{BiLSTM} is trained using \textit{Skip-gram} method with Fasttext\footnote{https://fasttext.cc/docs/en/crawl-vectors.html}\cite{graves2009novel} tool. These embedding were trained on EUR-Lex corpus rather than EUR-Lex summaries dataset as the EUR-Lex summaries dataset is considered less to train. These monolingual word embeddings are in English Language and are in 300 dimensions
 
+For training general-purpose multilingual word embedding we will be again using Fasttext which provides word embeddings in 157 languages on Wikipedia\footnote{https://www.wikipedia.org/} and Common Crawl\footnote{http://commoncrawl.org/} data and is trained using Continuous bag-of-words model in dimension 300. But as the word embeddings for multiple languages can not be combined together because they belong in different vector space. Facebook's MUSE\footnote{https://github.com/facebookresearch/MUSE} \cite{conneau2017word} with help of parallel dictionaries was used to align both word embeddings into a single vector space. Upon alignment, both the embeddings (English and German) can be simply concatenated and can be used for classification purpose. These word embeddings are created from various sources, it contains text from various domains and hence it will henceforth be refereed to as general-purpose word embeddings.
+
+\clearpage
 
 \section{Architecture and Training}
 This section describes in detail the specifics of architectures of the algorithm used for all the three questions mentioned in \ref{sec:conceptRQ}.
