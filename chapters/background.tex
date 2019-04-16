@@ -73,11 +73,10 @@ This is a modified version of K-means clustering with the above mentioned constr
 \subsection{Choosing $k$} \label{chooseK}
 To produce high quality clusters, the number of clusters ($k$) that the data needs to be divided into should be known. \textit{Silhouette Score} \cite{rousseeuw1987silhouettes} and \textit{Elbow Analysis} \cite{thorndike1953belongs,ketchen1996application}  are two methods to find out the number of clusters.
 
-\todo{write more}
-\subsubsection{Silhouette Score}
+\subsubsection{Silhouette Score}\label{silout}
 Silhouette score is a measure of the quality of a cluster. It determines how well an object fits the cluster assignment. Two things are necessary for the creation of silhouettes,first thing we need is the clusters and second we need the proximity between each of the cluster objects.
 
-Let $s(x)$ be the silhouette score for element $x$ which is placed in cluster $A$ as shown in \ref{fig:sil_score}. We can calculate the dissimilarity $a(x)$ between elements $x$ of cluster $A$ and other elements of cluster $A$,
+Let $s(x)$ be the silhouette score for element $x$ which is placed in cluster $A$ as shown in \ref{fig:sil_score}. We can calculate the dissimilarity (distance) $a(x)$ between elements $x$ of cluster $A$ and other elements of cluster $A$,
 \begin{equation}\label{eq:sil_1}
     a(x) = \textit{average dissimilarity between x and other elements of cluster A}
 \end{equation}
@@ -86,7 +85,7 @@ In \ref{fig:sil_score} $a(x)$ is represented by the average length of all the li
 \begin{equation}\label{eq:sil_2}
     d(x,B) = \textit{average dissimilarity between x and other elements of cluster B}  
 \end{equation} % In the pair wise clustering you forgot to mention anything in comment
-In the \ref{fig:sil_score} $d(x,B)$ is represented by the average of lines stretching from element $x$ in the  cluster $A$ to all the elements in the cluster $B$. Once this is calculated for all the clusters, the minimum of these numbers is selected and denoted by 
+In the \ref{fig:sil_score}, $d(x,B)$ is represented by the average of lines stretching from element $x$ in the  cluster $A$ to all the elements in the cluster $B$. Once this is calculated for all the clusters, the minimum of these numbers is selected and denoted by 
 \begin{equation}\label{eq:sil_3}
     b(x) = minimum(d(x, B))
 \end{equation}
@@ -98,7 +97,7 @@ To calculate the silhouette score of $s(x)$, we use $a(x)$ and $b(x)$ obtained i
 \begin{equation}
     s(x) = \frac{b(x)-a(x)}{max\{a(x),b(x)\}}
 \end{equation}
-
+The higher the value of $s(x)$, better the assignment of the clusters.
 
 \begin{figure}[!ht]
     \centering
@@ -109,10 +108,10 @@ To calculate the silhouette score of $s(x)$, we use $a(x)$ and $b(x)$ obtained i
 \end{figure}
 
 
-\subsubsection{Elbow Analysis}
+\subsubsection{Elbow Analysis} \label{elbow}
 Elbow analysis \cite{thorndike1953belongs,ketchen1996application} is another method of finding the number of clusters ($k$). The K-means algorithm works by finding the clusters which minimize the within cluster variance. The sum of squares of all the points in a cluster explains the variance within a cluster and hence it is used in elbow analysis to find the optimal number of clusters. 
 
-Elbow analysis uses the within cluster sum of errors (WCSS). WCSS is calulated as the sum of distances of each point of a cluster and the centroid of that cluster. 
+Elbow analysis uses the Within Cluster Sum of Errors (WCSS). WCSS is calulated as the sum of distances of each point of a cluster and the centroid of that cluster. 
 
 \todo{redraw the figure}
 \begin{figure}[!ht]
@@ -138,39 +137,58 @@ This WCSS distances is plotted against the number of clusters which show an elbo
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics{pics/Elbow_example.jpg}
+    \includegraphics{pics/elbow_at_4.jpg}
      \captionsetup{justification=centering,margin=2cm}
-    \caption{Illustration of elbow at $k =2$ }
-    \label{fig:elbow_at_2}
+    \caption{Example illustrating elbow at $k =4$ }
+    \label{fig:elbow_at_4}
 \end{figure}
 
-In the \ref{fig:elbow_at_2} we can see the elbow shape at $k=2$ on the x axis. This suggest that we divide the data into two clusters.
+In the \ref{fig:elbow_at_4} we can see the elbow shape at $k=2$ on the x axis. This suggest that we divide the data into two clusters.
 
-\todo{why elbow is not trust worth and why it has to be used with silhouette scores.}
 
 \clearpage
 \section{Support Vector Machine}\label{sec:svm}
-Text Categorization is an important technique for handling and organization of text corpora. The aim of categorization is the classification of text into some predefined categories. Support Vector Machines are based on \textit{Structural Risk Minimization},
-which aims to find out a hypothesis $h$ for which we have the lowest \textit{true} error. The true error of $h$ is the probability that $h$ will make an error on the unseen and randomly selected data. Support Vector Machines are universal learners, also their ability to learn is independent of the dimensionality  of the input features. The dimensionality is high in case of text and also most text categorization problems are linearly separable \cite{joachims1998text}, which makes them suitable for text categorization.   
+An \gls{SVM} is a supervised learning algorithm. It tries to find linear (in case of Linear \gls{SVM} Kernel) boundaries or hyperplane in the given feature space. An \gls{SVM} tries to maximize the distance between the two points of a decision surface \cite{manning2010introduction}.
 
-%\todo[inline]{About svm and how it works}
-A Support Vector Machines is a supervised learning algorithm. It tries to find linear (in case of Linear SVM Kernel) boundaries in the given feature space. An SVM tries to maximize the distance between the two points of a decision surface \cite{manning2010introduction}.
+\glspl{SVM} are based on \textit{Structural Risk Minimization}, which aims to find out a hypothesis $h$ for which we have the lowest \textit{true} error. The true error of $h$ is the probability that $h$ will make an error on the unseen and randomly selected data. Support Vector Machines are universal learners, also their ability to learn is independent of the dimensionality  of the input features. The dimensionality is high in case of text and also most text categorization problems are linearly separable \cite{joachims1998text}, which makes them suitable for text categorization.   
+
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics{pics/svm.png}
+    \includegraphics{pics/\gls{SVM}.png}
     \captionsetup{justification=centering,margin=2cm}
     \caption{Support Vector Machines}
     \label{fig:svm}
 \end{figure}
 
- 
+To understand how \gls{SVM} works, consider the equation of hyperplane which is given as \cite{friedman2001elements},
 
-% The following paragraph will be in the implementation chapter
+\begin{equation} \label{eqn6}
+   w \cdot x + b = 0
+\end{equation}
+where $w$ represents the non-zero vector which is normal to the hyperplane, $x$ is any point on the same space as the hyperplane and $b$ is a scalar. Now, let us consider additional two hyperplanes which are normal:
+\begin{equation} \label{eqn7}
+    w \cdot x + b = \pm 1
+\end{equation}
+Distance of any given point $x_i$ is given by 
+\begin{equation} \label{eqn8}
+    d \left( w , b ; x _ { i } \right) = \frac { \left| w \cdot x _ { i } + b \right| } { \| w \| }
+\end{equation}
+The points on the hyperplanes defined by equation \ref{eqn7} are known as support vectors. The other points have no influence on the classification process and we can further simplify the equation \ref{eqn8} by replacing the numerator with 1
 
+\begin{equation} \label{eqn9}
+    d ( w , b ; | w \cdot x + b | = 1 ) = \frac { 1 } { \| w \| }
+\end{equation}
+The optimize \ref{eqn9} requires us to simply maximize $| | w | | ^ { - 1 }$, which is equal to minimizing $| | w | | ^ { 2 }$. Hence, we need to solve the optimizing problem
+\begin{equation} \label{eqn10}
+    \min _ { w , b } \left( \frac { 1 } { 2 } \| w \| ^ { 2 } \right)
+\end{equation}
+The \ref{eqn10} is subjected to the constraint that the distance from a given point $x_i$ must be equal to or greater than one. Otherwise, the $w \rightarrow 0$ will always be the optimal solution. 
+\begin{equation} \label{eqn11}
+    y \left( w \cdot w _ { i } + b \right) \geq 1 , \forall i \in [ 1 , m ]
+\end{equation}
+A change in support vectors of the \gls{SVM} will only affect the margins and changes in any other points will not have any impact on the margins and the hyperplane found by the algorithm.
 
-
-\clearpage
 \section{Deep Learning} \label{sec:DeepLearning}
 
 The rise in digitization brought in the problem of creation of huge and diverse unstructured data. With the increase in computation power and the need to analyse the data to get better insight of it has given rise to deep learning. Deep learning is a sub category of artificial intelligence which is inspired by human brain and replicate the way a human learns. An Artificial Neural Network (ANN) mimics the human brain. Basic neural network will have an input layer, one output layer along with a hidden layer consisting of units that process given input into something that the output layer can use.   ANNs are incredible tools for recognizing patterns which are way too complex for programmers to extract and teach the machine to recognize.Neural Networks have been in to existence since last century, however it is during last decade they have become a major part of artificial intelligence due to the technique called backpropagation.
@@ -381,10 +399,10 @@ The Backpropagation through Time (BPTT) is an extension of Backpropagation which
 
 \section{Text Representation}\label{backgroundTextRepresentation}
 
-All text based computer systems requires some representation of textual data depending on the type of problem at hand. Unlike other data formats, textual data is semi structured or even unstructured. The representation of text in such system is done by transforming text into numerical form.  Detailed below are two of the most popular text representation techniques, TF-IDF and Word Embeddings.  
+All text based computer systems requires some representation of textual data depending on the type of problem at hand. Unlike other data formats, textual data is semi structured or even unstructured. The representation of text in such system is done by transforming text into numerical form.  Detailed below are two of the most popular text representation techniques, \gls{TF-IDF} and Word Embeddings.  
 
-\subsection{Term Frequency - Document Inverse Frequency}
-TF-IDF is the most common weighting method for describing textual data. Machine learning techniques such as Support Vector Machines and K Nearest Neighbours make use of this weighting scheme for text categorization. This technique works by first calculating \textit{Term Frequency} which is how often a word appears in a particular document and \textit{Inverse Document Frequency} which measure how infrequent a term is in the corpus \cite{soucy2005beyond}.
+\subsection{Term Frequency - Inverse Document Frequency}
+\gls{TF-IDF} is the most common weighting method for describing textual data. Machine learning techniques such as Support Vector Machines and K Nearest Neighbours make use of this weighting scheme for text categorization. This technique works by first calculating \textit{Term Frequency} which is how often a word appears in a particular document and \textit{Inverse Document Frequency} which measure how infrequent a term is in the corpus \cite{soucy2005beyond}.
 
 \textit{Term Frequency} is calculated as follows,
 
@@ -410,7 +428,7 @@ where:
       & n_{i}=\text{number of documents with term $i$ in it}\\
 \end{align*}     
 
-From equation \ref{tf} and \ref{idf}, $TF-IDF$ score is computed as,
+From equation \ref{tf} and \ref{idf}, $\gls{TF-IDF}$ score is computed as,
 
 \begin{equation}\label{tf-idf}
 w_{i,j} = tf_{i,j} \times \log\frac{N}{n_{i}}
@@ -423,7 +441,7 @@ where:
 \end{align*}
 
 \subsection{Word Embeddings}
-Conventionally, text representation in natural language processing involves techniques like \textit{bag-of-words} model in which a text is represented by the bag (words in the text), \textit{skip-gram} model which is generalization of \textit{n-grams} models where the words do not need to be successive for the text in consideration but can be skipped, hence named \textit{skip-gram} \cite{guthrie2006closer} and  \textit{tf-idf}. These techniques are a simple representation of various features. However, in the bag-of-words approach, grammar and word order are not considered. And in tf-idf only the importance of words is considered, \ref{sec:svm}. Hence, these techniques do not capture the semantics of the text. \cite{maas2011learning}.
+Conventionally, text representation in natural language processing involves techniques like \textit{bag-of-words} model in which a text is represented by the bag (words in the text), \textit{skip-gram} model which is generalization of \textit{n-grams} models where the words do not need to be successive for the text in consideration but can be skipped, hence named \textit{skip-gram} \cite{guthrie2006closer} and  \textit{\gls{TF-IDF}}. These techniques are a simple representation of various features. However, in the bag-of-words approach, grammar and word order are not considered. And in \gls{TF-IDF} only the importance of words is considered, \ref{sec:svm}. Hence, these techniques do not capture the semantics of the text. \cite{maas2011learning}.
 
 Due to the above mentioned limitations, word embeddings were introduced. Word embeddings are a vector representation of the meaning of words in the corpus. This means that words are placed in a high-dimensional vector space where words with the similar meaning are placed close to each other. Neural network-based word vector models are usually trained using stochastic gradient descent where the gradient is obtained by backpropagation \cite{le2014distributed}.
 
@@ -553,12 +571,8 @@ the            & of              \\ \hline
 
 This process will continue for the whole sentence until each and every word of the sentence is in the training dataset against its neighboring words. This dataset is then feed to the untrained neural network to predict the output.  
 
-After the network converges, words with similar meaning are placed together in the embedding space. For example words like "powerful" and "strong" are placed close to each other in the vector space. \todo{Need to work on this, doesn't look good}
+After the network converges, words with similar meaning are placed together in the embedding space. For example words like "powerful" and "strong" are placed close to each other in the vector space. 
 
-
-\todo{This following paragraph goes into implementation}
-
-The model used in creation of the word vectors is a neural network, and neural networks are data hungry as it requires a lot of data to train them properly. As a result, another domain specific dataset is used in this experiment because dataset used for classification is small. Hence, the whole EUR-Lex dataset was used as it contains 19,348 documents mostly consisting regulations, decisions and directives of European Union \cite{jf:SemanticLaw}.
 
 \subsection{Cross Lingual Word Embedding}\label{backgroundCrosslingual}
 
@@ -569,7 +583,7 @@ To achieve this Duong et. al \cite{duong-EtAl:2016:EMNLP}, proposed using biling
 Facebook's MUSE Python library \cite{conneau2017word} aligns word vectors from multiple languages to a single vector space, the author claims that these embeddings state-of-art multilingual word embeddings, they have used Facebook's Fasttext \cite{bojanowski2017enriching} monolingual word embeddings and aligned them in common vector space. They use two sets word embeddings that are trained on monolingual data, and learns the mapping between these two embedding in a common vector space. It exploits the similarities of monolingual embedding space \cite{mikolov2013exploiting} to learn mapping between the two embeddings.
 
 \subsection{Long Short Term Memory}
-Neural networks have shown remarkable capabilities in processing and modeling natural language. Recurrent Neural Networks (RNN) and Convolutional Neural Networks (CNN) are common architectures for handling natural language. Long Short Term Memory (LSTM)\cite{hochreiter1997long} is a variant of RNNs, unlike other feed forward neural networks these networks have recurrent connections in them which allow information to persist.
+Neural networks have shown remarkable capabilities in processing and modeling natural language. \gls{RNN} and \gls{CNN} are common architectures for handling natural language. \gls{LSTM} \cite{hochreiter1997long} is a variant of \gls{RNN}s, unlike other feed forward neural networks these networks have recurrent connections in them which allow information to persist.
 
 \begin{figure}[!ht]
     \centering
@@ -579,20 +593,20 @@ Neural networks have shown remarkable capabilities in processing and modeling na
     \label{fig:rnn_single_cell}
 \end{figure}
 
-The \ref{fig:rnn_single_cell} shows a single RNN cell having a recurrent connection. This recurrent connection allows it to retain the previous state and make use of the context of the previous state \cite{graves2009novel}. Due to this property RNNs are very effective in processing text. 
+The \ref{fig:rnn_single_cell} shows a single \gls{RNN} cell having a recurrent connection. This recurrent connection allows it to retain the previous state and make use of the context of the previous state \cite{graves2009novel}. Due to this property \glspl{RNN} are very effective in processing text. 
 
-RNNs are effective but suffer from the problem that the capacity of them to retain the previous states is fairly limited. The problem is that the input influences either diminishes the output or increases it exponentially. This is referred to as the problem of \textit{vanishing gradients}\cite{hochreiter2001gradient}. This problem makes it hard for RNNs to make use of more than a few previous states. LSTMs are a special kind of RNNs which address the problem of vanishing gradients. They contains recurrently connected sub-networks called \textit{memory blocks} and each of these blocks contains three gates; input gate, forget gate and output gate. These gates allows an LSTM to store information for a longer period of time. If the input gate is shut, that is if it has no activation (or close to 0), the activation of a block will not be overwritten for the next incoming inputs. Also, the block activation is only available to the network when the output gate is open. The forget gate switches on and off the recurrent connections.
+\glspl{RNN} are effective but suffer from the problem that the capacity of them to retain the previous states is fairly limited. The problem is that the input influences either diminishes the output or increases it exponentially. This is referred to as the problem of \textit{vanishing gradients}\cite{hochreiter2001gradient}. This problem makes it hard for \glspl{RNN} to make use of more than a few previous states. \glspl{LSTM}s are a special kind of \glspl{RNN}s which address the problem of vanishing gradients. They contains recurrently connected sub-networks called \textit{memory blocks} and each of these blocks contains three gates; input gate, forget gate and output gate. These gates allows an \gls{LSTM} to store information for a longer period of time. If the input gate is shut, that is if it has no activation (or close to 0), the activation of a block will not be overwritten for the next incoming inputs. Also, the block activation is only available to the network when the output gate is open. The forget gate switches on and off the recurrent connections.
 
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=10cm]{pics/lstm.jpg}
     \captionsetup{justification=centering,margin=2cm}
-    \caption{LSTM block with a single cell. The cell has recurrent connections with a forget gate. The three gates collect inputs from rest of the network. }
+    \caption{\gls{LSTM} block with a single cell. The cell has recurrent connections with a forget gate. The three gates collect inputs from rest of the network. }
     \label{fig:LSTM_BLOCK}
 \end{figure}
 
 
-Let $X$ $=$ ${x_{1}, x_{2},....,x_{n}}$ be the input sequence and $Y$ $=$ ${y_{1}, y_{2},....,y_{n}}$ be the output sequence. An LSTM network learns the mapping of input sequence to the output sequence using the following equations one by one from time $t$ $=$ 1 to $n$. Hence, the equation for the respective gates and the cell states are as follows:
+Let $X$ $=$ ${x_{1}, x_{2},....,x_{n}}$ be the input sequence and $Y$ $=$ ${y_{1}, y_{2},....,y_{n}}$ be the output sequence. An \gls{LSTM} network learns the mapping of input sequence to the output sequence using the following equations one by one from time $t$ $=$ 1 to $n$. Hence, the equation for the respective gates and the cell states are as follows:
 
 \begin{equation} \label{eq:lstm_input_gate}
     i_{t} =\sigma(w_{i}[h_{t-1},x_{t}]+b_{i})
@@ -619,7 +633,7 @@ where:
       & b_{i}=\text{bias for output gate}\\
 \end{align*}
 
-The \ref{eq:lstm_input_gate} is for the input gate which allows whatever new information is to be stored in the cell state. \ref{eq:lstm_forget_gate} is for the forget gate which is responsible for discarding information that is not useful anymore from the cell state. \ref{eq:lstm_output_gate} is for the output gate which is responsible for the activation of the whole LSTM block at time $t$ 
+The \ref{eq:lstm_input_gate} is for the input gate which allows whatever new information is to be stored in the cell state. \ref{eq:lstm_forget_gate} is for the forget gate which is responsible for discarding information that is not useful anymore from the cell state. \ref{eq:lstm_output_gate} is for the output gate which is responsible for the activation of the whole \gls{LSTM} block at time $t$ 
 
 
 \begin{equation}\label{eq:lstm_newCellState}
@@ -645,8 +659,8 @@ At any given time step, the current cell state knows what is to be forgotten, th
 
 
 
-\section{Bidirectional LSTM}
-Bidirectional LSTMs are  able to access the context of a given sequence in both direction(forward and backward) \cite{schuster1997bidirectional}. In \ref{fig:BiLSTM} we can see that Bidirectional LSTM contains two layers out of which one processes the sequence in forward direction and one processes the sequence in backward direction. The output layer is connected to both layers which enables it to process both forward or future context and backward or past context. Bidirectional LSTMs have show to preformed better then standard LSTMs and RNNs in sequence learning data \cite{baldi2000bidirectional} \cite{fukada1999phoneme}.
+\section{Bidirectional Long Short Term Memory}
+\glspl{BiLSTM} are  able to access the context of a given sequence in both direction(forward and backward) \cite{schuster1997bidirectional}. In \ref{fig:BiLSTM} we can see that Bidirectional LSTM contains two layers out of which one processes the sequence in forward direction and one processes the sequence in backward direction. The output layer is connected to both layers which enables it to process both forward or future context and backward or past context. \glspl{BiLSTM} have show to preformed better then standard \glspl{LSTM} and \glspl{RNN}s in sequence learning data \cite{baldi2000bidirectional} \cite{fukada1999phoneme}.
 
 \begin{figure}[!ht]
     \centering
@@ -658,131 +672,10 @@ Bidirectional LSTMs are  able to access the context of a given sequence in both 
 
 From \ref{fig:BiLSTM}, it can be seen that there is no connection between the forward passing layer and backward passing layer, hence outputs from forward pass is not connected to the input of backward class and vice versa, so training a Bidirectional LSTM is same as unidirectional LSTM for the most part.
 
-\section{Data Distribution}
-There are many inconsistencies when it comes to the number of documents in the classes. In the class \textit{justice freedom and security} there are \textit{320} documents for English corpus and \textit{314} documents for German corpus. These irregularities are of less importance when it comes to learning them separately, but becomes important when both languages are to be learned together. Information can leak from training to testing set leading to unrealistic results if these inconsistencies are not dealt with earlier. 
-
-\begin{figure}[!ht]
-\begin{center}
-\makebox[2pt]{
-\begin{tikzpicture}
-  \centering
-  \begin{axis}[
-        ybar, axis on top,
-        title={},
-        height=7cm, width=15cm,
-        bar width=0.2cm,
-        ymajorgrids, tick align=inside,
-        enlarge y limits={value=.1,upper},
-        ymin=0, ymax=600,
-        axis x line*=bottom,
-        axis y line*=left,
-        y axis line style={opacity=0},
-        tickwidth=0pt,
-        ytick style={draw=none},
-        enlarge x limits=true,
-        legend style={
-            at={(1,1)},
-            anchor=north east,
-            legend columns=-1,
-            /tikz/every even column/.append style={column sep=0.1cm}
-        },
-        ylabel={number of documents},
-        symbolic x coords={
-        agriculture,
-        audiovisual  and  media,
-        budget,
-        competition,
-        consumers,
-        culture,
-        customs,
-        development,
-        economic  and  monetary  affairs,
-        education  training  youth,
-        employment  and  social  policy,
-        energy,
-        enlargement,
-        enterprise,
-        environment,
-        external  relations,
-        external  trade,
-        fight  against  fraud,
-        food  safety,
-        foreign  and  security  policy,
-        human  rights,
-        humanitarian  aid,
-        information  society,
-        institutional  affairs,
-        internal  market,
-        justice  freedom  security,
-        maritime  affairs  and  fisheries,
-        public  health,
-        regional  policy,
-        research  innovation,
-        taxation,
-        transport
-        },
-       xtick=data,
-       x tick label style={rotate=90,anchor=east},
-       %nodes near coords={\pgfmathprintnumber[precision=0]{\pgfplotspointmeta}}
-    ]
-    \addplot [draw=none, fill=blue!30] coordinates {
-        (agriculture, 37)
-	    (audiovisual and media,54) 
-		(budget,36) 
-		(competition,101) 
-		(consumers,190) 
-		(culture,44) 
-		(customs,60) 
-		(development,164) 
-		(economic and monetary affairs,160) 
-		(education training youth,190) 
-		(employment and social policy,427)
-		(energy,150)
-		(enlargement,168)
-		(enterprise,106)
-		(environment,380)
-		(external relations,149)
-		(external trade,69)
-		(fight against fraud,64)
-		(food safety,166)
-		(foreign and security policy,64)
-		(human rights,54)
-		(humanitarian aid,45)
-		(information society,136)
-		(institutional affairs,179)
-		(internal market,296)
-		(justice freedom security,544)
-		(maritime affairs and fisheries,96)
-		(public health, 79)
-		(regional policy,120)
-		(research innovation,98)
-		(taxation,16)
-		(transport,309)  };
-   
-\legend{English}
-\end{axis}
-\end{tikzpicture}
-}
-\end{center}
-\caption{Distribution of documents across English Language for EUR-Lex Summaries}
-\label{graph:distribution of data english docs}
-\end{figure}
-
-
-\section{Class Imbalance}\label{backgroundImbalance}
-Class imbalance occurs when the number of samples in one class is more than the other. \ref{graph:distribution of data english docs} shows that there is class imbalance in the dataset. This has to be taken into consideration before the selection of learning algorithm. Ideally, the number of samples in each class should be roughly same in order for a leaning algorithm to distinguish between them. If they are not nearly same the learning algorithm will favour the majority class and not learn the minority class. It creates \textit{accuracy paradox} which arise in such situation. For example, in a data set of 100 samples, 90 samples belonging to class $A$ and 10 belonging to class $B$, the training algorithm will naively predict everything in class $A$ which will result in accuracy of $90\%$, which is misleading. These situations are common in most machine learning problems and there are a few ways to tackle them. 
-
-
-\begin{itemize}
-  \item Collect more data, which is impossible in most cases.
-  \item Resample the data set, which could be challenge if the data set is limited in the first place.
-  \item Changing the performance metric to get more insights of the model.
-  \item Penalize the algorithm through class weights.
-\end{itemize}
 
 \section{Sentence based approach for training LSTMs} \label{backgroundSlidingWindow}
 
-Documents containing legal text are often very long. To process such documents it can divided into smaller sub-texts which are easy to process. In \cite{volkovich2016text}, authors have divided text into sub-text to consider the dependencies between written text. These long text can be processed and used theoretically by LSTMs \cite{hochreiter1997long} , it is often limited by hardware. Various techniques have been studied and applied on textual data on various levels. Text data has been annotated on different levels, on document level \cite{macdonald2006trec}, on paragraph level \cite{ferguson2009exploring}, on sentence level \cite{santos2009integrating, seki2008overview} and on the phrase level \cite{wilson2005recognizing}
+Documents containing legal text are often very long. To process such documents it can divided into smaller sub-texts which are easy to process. In \cite{volkovich2016text}, authors have divided text into sub-text to consider the dependencies between written text. These long text can be processed and used theoretically by \glspl{LSTM} \cite{hochreiter1997long} , it is often limited by hardware. Various techniques have been studied and applied on textual data on various levels. Text data has been annotated on different levels, on document level \cite{macdonald2006trec}, on paragraph level \cite{ferguson2009exploring}, on sentence level \cite{santos2009integrating, seki2008overview} and on the phrase level \cite{wilson2005recognizing}
 
 To overcome this, \textit{Sliding Window} based approach is used here. A sliding window algorithm divides a long array or stream into smaller chunks.  
 
@@ -835,10 +728,10 @@ A confusion matrix describes the performance of a classification model on a set 
 \begin{itemize}
     \item \textbf{Positive (P)}:Positive condition (e.g. is mango)
     \item \textbf{Negative (N)}:Negative condition (e.g. is not a mango)
-    \item \textbf{True Positive (TP)}: Number of samples that were Positive  (\textbf{P}) and identified and as Positive (\textbf{P}) by the algorithm.
-    \item \textbf{False Positive (FP)}: Number of samples that were Negative (\textbf{N}) but identified as Positive  (\textbf{P}) by the algorithm.
-    \item \textbf{True Negative (TN)}: Number of samples that were Negative (\textbf{N}) and predicted as Negative (\textbf{N}) by the algorithm.
-    \item \textbf{False Negative (FN)}: Number of samples that were Positive (\textbf{P}) but identified as Negative (\textbf{N})
+    \item \textbf{\gls{TP}}: Number of samples that were Positive  (\textbf{P}) and identified and as Positive (\textbf{P}) by the algorithm.
+    \item \textbf{\gls{FP}}: Number of samples that were Negative (\textbf{N}) but identified as Positive  (\textbf{P}) by the algorithm.
+    \item \textbf{\gls{TN}}: Number of samples that were Negative (\textbf{N}) and predicted as Negative (\textbf{N}) by the algorithm.
+    \item \textbf{\gls{FN}}: Number of samples that were Positive (\textbf{P}) but identified as Negative (\textbf{N})
 \end{itemize}
 
 
@@ -846,25 +739,25 @@ A confusion matrix describes the performance of a classification model on a set 
 Accuracy of is the ratio of number of correctly identified instances of all classes over the total number of instances in the dataset. 
 \begin{align}
     Accuracy &= \frac{\text{Number of correct predictions}}{\text{Total number of predictions}}\\
-    Accuracy &= \frac{TP+TN}{TP+TN+FP+FN}
+    Accuracy &= \frac{\gls{TP}+\gls{TN}}{\gls{TP}+\gls{TN}+\gls{FP}+\gls{FN}}
 \end{align}
 
 Accuracy in case of unbalanced dataset is not a good measure to evaluate the performance of a model (See \ref{backgroundImbalance}). Hence, other evaluation matrices have to be used in order to get the per class performance of a classifier.
 
 \subsection*{Precision}
-Informally, precision indicates how many of Positive conditions were identified correctly. Formally, it is the ratio of True Positive (TP) and sum of True Positive (TP) and False Positive (FP).
+Informally, precision indicates how many of Positive conditions were identified correctly. Formally, it is the ratio of \gls{TP} and sum of \gls{TP} and \gls{FP}.
 
 \begin{align}
     Precision &= \frac{\text{Correctly identified positive conditions}}{\text{Total number of positive conditions}}\\
-    Precision &= \frac{TP}{TP+FP}
+    Precision &= \frac{\gls{TP}}{\gls{TP}+\gls{FP}}
 \end{align}
 
 \subsection*{Recall}
-Recall also known as True positive rate is the amount of positive values that are correctly identified, that is the ratio of True Positive (TP) and sum of True Positive (TP) and False Negative (FN)
+Recall also known as True positive rate is the amount of positive values that are correctly identified, that is the ratio of \gls{TP} and sum of \gls{TP} and \gls{\gls{FN}}
 
 \begin{align}
     Recall &= \frac{\text{Correctly identified positive conditions}}{\text{Total number of positive prediction by algorithm}}\\
-    Recall &= \frac{TP}{TP+FN}
+    Recall &= \frac{\gls{TP}}{\gls{TP}+\gls{FN}}
 \end{align}
 
 \subsection*{F-measure (F1-Score)}
@@ -881,10 +774,10 @@ Precision, Recall and F-measure will give us the performance of the classifier o
 
 Consider the following example:
 \begin{itemize}
-    \item Class A: 5 TP and 5 FP
-    \item Class B: 1 TP and 1 FP
-    \item Class C: 20 TP and 90 FP
-    \item Class D: 10 TP and 10 FP
+    \item Class A: 5 \gls{TP} and 5 \gls{FP}
+    \item Class B: 1 \gls{TP} and 1 \gls{FP}
+    \item Class C: 20 \gls{TP} and 90 \gls{FP}
+    \item Class D: 10 \gls{TP} and 10 \gls{FP}
 \end{itemize}
 
 Calculation precision on these classes we get, $P_{A}, P_{B}, P_{D}= 0.5$ and $P_{C} = 0.2$. 

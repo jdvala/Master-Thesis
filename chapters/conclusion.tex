@@ -1,4 +1,32 @@
-\ifgerman{\chapter{Zusammenfassung und zukünftige Arbeiten}}{\chapter{Conclusion, Discussion and Future Work}}
+\ifgerman{\chapter{Zusammenfassung und zukünftige Arbeiten}}{\chapter{Conclusion, Limitaions and Future Work}}
 \label{ch:conclusion}
 
-\todots
+In this chapter, the summary of this  thesis and the concluding remarks are presented in \ref{sec:conclusion} along with discussion on some limitations about the approaches and methods used in this thesis are presented in \ref{sec:limitations} and future work are presented in \ref{sec:futureWorks}
+
+\section{Conclusion}\label{sec:conclusion}
+This thesis shows that although the \gls{SVM} outperforms the \gls{BiLSTM} trained on English and German language in various configurations. However, other characteristics of \gls{BiLSTM} makes it viable in situations where is there is an abundance of data to train as the \glspl{SVM} are not highly scalable compared to the deep learning counterpart. Also, \glspl{BiLSTM} can process multiple languages using a single model; this is however not the case with \glspl{SVM} as it would require the use of language detector which not only adds processing overload but also can be poor results as the error by the language detector propagates downwards in the hierarchy.  \ref{fig:question1Eval} shows that multilingual input helps the \gls{BiLSTM} to achieve comparable results to the SVM. It also concludes that clustering the data affects the performance of the \gls{BiLSTM} due to the specialization effect. 
+
+The results of the second research question exhibit that general-purpose resource can perform equivalent to the domain-specific resources on domain-specific tasks when the weights are allowed to update, however looking closely at the \ref{table:Evaal2} we can see that the overall performance of the classifier with general-purpose resources is quite comparable to the classifier trained on domain-specific embeddings, but when the classes are underrepresented in the training set, the classifier with domain-specific embeddings performs better on those classes than the general-purpose embeddings. \ref{fig:SecondEvalQuestion} shows that the classifier with frozen word embedding layer failed to train correctly and overfitted, the cause for this while looking at the performance of the classifier with trainable general-purpose word embedding layer, can be due to the weight updates. The general-purpose word embeddings are trained on data from various source. These sources might contain data from multiple domains, and the fact that the semantics and syntactics of the language used in the different fields vary extensively, these word embeddings might not have captured the legal domain-specific semantics and syntactics. During the training of the word embeddings, no new words are added to the vocabulary; hence the difference between the performance of trainable and not trainable general-purpose word embeddings is due to the weight update.
+
+
+From the evaluation of the third research question, it is quite clear that a classifier benefits from multilingual inputs. Hence, the classification performance of a classifier benefits from multilingual input.  The improvement might be an attribute of the fact that the number of samples per class for a monolingual classifier is less compared to the bilingual classifier. Less training data for the monolingual classifier means that it has less representation of the target semantic space and adding more sample in the form of a different language would increase the performance of the classifier.
+
+
+\section{Limitations}\label{sec:limitations}
+
+During the data resampling phase, exploiting the multi-label property of the dataset, the documents belonging to more than one category were removed from the class with the highest number of samples.  This process introduces bias in the training dataset towards the minority classes. Furthermore, eliminating the samples from the majority class will reduce the representativeness of that class.  
+
+Clustering the data for classification is counter-intuitive. Cluster on one hand groups similar objects or samples together using some form of distance measure calculated using instance attributes. Segregating instance based on similarity produces unfavorable conditions for a classifier to learn patterns to distinguish between similar instances of a group. To illustrate this hypothesis, we would like to present an application use case of classifying different brands of beer and cola when the labels on them are removed. It is apparent to distinguish between beer bottle and cola bottle but if we were to cluster them based on alcohol content, then all the beer bottles will be in a separate cluster, and all the cola bottles will be in a different group. It would be difficult for a classifier to distinguish between a Heineken beer, a Budweiser beer, and a Carlsberg beer as the color, and the shape of all these bottles is same. The color and the shape, however, will not be the only features used for classification but are good enough to make a point.
+
+\section{Future Work}\label{sec:futureWorks}
+
+With the abundance of text data available with their labels, it becomes rather easy to test different approaches to provide a better and target specific solution for some problems in text categorization genre.  This thesis tries to answer a small fraction of those problems.  \glspl{SVM} are thoroughly studied and used in ample of text categorization problems, but other algorithms such as Naive Bayes classifier and k-nearest neighbors also have shown to work well with textual data. Similarly,  Convolutional Neural Networks has been demonstrated to outperform \glspl{BiLSTM} in many classification tasks.
+
+During the data resampling phase, duplicate samples from the majority class were removed, and this created a bias towards the minority class. This can be addressed in the future by having an agnostic evaluation strategy, which is by considering the multi-label aspect of the data during the testing phase.
+
+In the case of general-purpose word embeddings, many different algorithms with their advantages and disadvantages have been shown to perform better than their predecessors. Google's multilingual word embedding \textit{BERT}, Zalando's \textit{Flair} and Allen NLP's \textit{ELMo} word multilingual word embeddings are other few general-purpose word embeddings which can be tested to see if they can perform well for legal domain specific tasks?
+
+Its shown in during the evaluation that multilingual input helps in the betterment of the classifier performance. It would be interesting to know at what point adding more languages becomes futile when considering training cost versus the performance increase.
+
+
+

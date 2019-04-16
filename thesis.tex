@@ -4,8 +4,8 @@
 	a4paper,   % forces A4 format even if <german> is not selected (useful for printing)
 	hints,     % shows instructions on how to write the thesis
 	%draft,    % omit title page, listings, and particular chapters selected below using include only
-	%print,    % the printed version does not use colored links
-	%final,    % removes all TODOs
+	print,    % the printed version does not use colored links
+	final,    % removes all TODOs
 ]{tex/ttthesis}
 
 \input{tex/colorscheme}
@@ -29,7 +29,7 @@
 
 \newcommand{\advisortwo}{}
 \newcommand{\departmenttwo}{}
-
+\newcommand{\setdate}{}
 % Thesis kind
 \ifgerman{\newcommand{\thesiskind}{Masterarbeit}}{\newcommand{\thesiskind}{Master's Thesis}}
 %\ifgerman{\newcommand{\thesiskind}{Bachelorarbeit}}{\newcommand{\thesiskind}{Bachelor Thesis}}
@@ -45,12 +45,12 @@
 	\newcommand{\theforename}{Jay Dilipbhai}
 	\newcommand{\thesurname}{Vala}
 	\newcommand{\thetitle}{Classification of multilingual legal text Using deep learning: Evaluation of General-Purpose Resources for a Legal Domain-Specific Task}
-	\newcommand{\thedate}{}
+	\newcommand{\thedate}{4. Monat 2019}
 	
 }
-\newcommand{\theyear}{2018}
+\newcommand{\theyear}{2019}
 % date for signature in erklaerung.tex (declaration of originality)
-\newcommand{\signaturedate}{\todo{42. Monat 2014}}
+\newcommand{\signaturedate}{4. Monat 2019}
 
 %*********************************************************************%
 % SETUP                                                               %
@@ -70,8 +70,20 @@
 %*********************************************************************%
 
 % HOWTO: \gls{IDE} for singular or \glspl{IDE} for plural with 's
-%\makeglossaries
-\newacronym{IDE}{IDE}{Integrated Development Environment}
+\makeglossaries
+\newacronym{SVM}{SVM}{Support Vector Machines}
+\newacronym{LSTM}{LSTM}{Long Short Term Memory}
+\newacronym{BiLSTM}{BiLSTMs}{Bidirectional Long Short Term Memory}
+\newacronym{TF-IDF}{TF-IDF}{Term Frequency Inverse Document Frequency}
+\newacronym{AI}{AI}{Artificial Intelligence}
+\newacronym{NLP}{NLP}{Natural Language Processing}
+\newacronym{ANN}{ANN}{Artificial Neural Network}
+\newacronym{RNN}{RNN}{Recurrent Neural Network}
+\newacronym{CNN}{CNN}{Convolutional Neural Network}
+\newacronym{TP}{TP}{True Positive}
+\newacronym{TN}{TN}{True Negative}
+\newacronym{FP}{FP}{False Positive}
+\newacronym{FN}{FN}{False Negative}
 %\glsaddall % use only if you have acronyms that occur only in graphics
 
 %*********************************************************************%
@@ -100,7 +112,23 @@
     
     % The whole acknowledgement is meant to be written here, so great.
 	\chapter*{Acknowledgements}
-	 I would like to thank...
+	 \begin{quote}
+	    ``Life is like a box of chocolates. You never know what you’re gonna get" - Forrest Gump
+	 \end{quote} 
+
+
+    Last year in November, I embarked on this fascinating journey of undertaking my Master thesis unaware what lies ahead,  just like a box of chocolates. It gives me immense pleasure and a sense of satisfaction to finish this thesis. This thesis would not have been completed had there not been a few people to support and guide me all along.
+    
+    First and foremost, I want to thank my supervisor M.Sc. Sabine Wehnert, without whom this thesis would not have been possible in the first place. Her constant support, discussions, and assistance at every step were very helpful. I want to thank M.Sc. Marcus Thiel, for his assistance and suggestions on validating various concepts, and Stefan Langer for his support and ideas.
+    
+    I want to thank my Mom, Dad, Sister, and Brother for their moral and financial support. They stood by me in my thick and thin. I can not even begin to describe the gratitude and appreciation for their support.
+    
+    I want to thank my friends for listening to me, and at times tolerating me. They were like a family away from home. 
+    
+    Last but not least I would like to thank everyone who has supported me directly or indirectly throughout this thesis.
+
+
+    
 	\blankpage
 }
 
@@ -155,9 +183,10 @@
 \include{chapters/concept}
 \include{chapters/implementation}
 \include{chapters/evaluation}
-\include{chapters/conclusion}
 \include{chapters/relatedwork}
-%\include{chapters/futurework}
+\include{chapters/conclusion}
+
+
 
 %*********************************************************************%
 % APPENDIX                                                            %
@@ -165,7 +194,7 @@
 
 \appendix
 \include{chapters/appendix}
-
+\include{chapters/declaration.tex}
 %*********************************************************************%
 % LITERATURE                                                          %
 %*********************************************************************%

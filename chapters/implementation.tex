@@ -57,162 +57,94 @@ Facebook's MUSE multilingual word embeddings \cite{conneau2017word} were trained
 
 \fi
 \section{Data Resampling} \label{dataResampling}
-The EUR-Lex summaries, are the summarised versions of legislations. These summaries are written in an abstract manner to apply for multiple situations, so that one regulation may belong to several categories. Multi-label classifier with very few examples might not be applicable as the classifier will favour majority class because of the imbalance. 
+The method behind the resampling of the dataset is to loop over the dataset one by one to find duplicate documents. When a duplicate document is found, check the labels of all the duplicate documents and compare the total number of samples in all the labels for which the duplicate documents are found. Remove the duplicate instance from the class containing the most number of samples. This method is time consuming as the number of loops the algorithm goes through before finishing is $n$ x $n$ where $n$ is the number of documents.
 
-From \ref{graph:distribution of data english docs} it is clear that the data suffers from class imbalance. To mitigate the problem of class imbalance we upsample minority class or downsample majority class. In our case, upsampling minority class is difficult as it is very hard to produce alike documents because of nature of text and downsampling minority class would lessen the already less data. We had to find a way to not only downsample the majority in such a fashion that would result into balancing the data as well as not lessen the data to an extent that is not useful anymore.
+To make the algorithm more efficient, first the total number of samples are counted. Then, a list of non-duplicate documents without the labels is created. The generated list is then used to iterate over all the duplicate documents, by comparing every document and storing the corresponding labels of the duplicate document. After a single document from the non duplicated list completes iterating over all the duplicate documents, the labels of the duplicated documents is checked for its class distribution and then the duplicated document is removed from the majority class.
 
-As the data is multilabeled it can be exploit because of the fact that a sample might belong to more than one class. The documents are transformed in such a way that if a document belongs to two or more class, then it will be kept in the class with minimum number of samples. That is the class label for that document will be the one with the fewest examples. This method will downsample the majority class as only the duplicated documents are removed from it but also make this classification problem a multi-class from a multi-label one. In the testing phase, the predictions are allowed from the set of all the true labels. This method however introduces a bais towards the minority classes but it acknowledges the presence of other possible category assignment in the end result.
+\ref{table:befforeAfterResampling} shows the total number of documents in the original dataset and the number of documents in after the resampling technique is applied.
 
-\begin{figure}[!ht]
-\begin{center}
-\makebox[2pt]{
-\begin{tikzpicture}
-  \centering
-  \begin{axis}[
-        ybar, axis on top,
-        title={},
-        height=7cm, width=14cm,
-        bar width=0.1cm,
-        ymajorgrids, tick align=inside,
-        enlarge y limits={value=.1,upper},
-        ymin=0, ymax=700,
-        axis x line*=bottom,
-        axis y line*=left,
-        y axis line style={opacity=0},
-        tickwidth=0pt,
-        ytick style={draw=none},
-        enlarge x limits=true,
-        legend style={
-            at={(1,1)},
-            anchor=north east,
-            legend columns=-1,
-            /tikz/every even column/.append style={column sep=0.5cm}
-        },
-        ylabel={number of documents},
-        symbolic x coords={
-        agriculture,
-        audiovisual  and  media,
-        budget,
-        competition,
-        consumers,
-        culture,
-        customs,
-        development,
-        economic  and  monetary  affairs,
-        education  training  youth,
-        employment  and  social  policy,
-        energy,
-        enlargement,
-        enterprise,
-        environment,
-        external  relations,
-        external  trade,
-        fight  against  fraud,
-        food  safety,
-        foreign  and  security  policy,
-        human  rights,
-        humanitarian  aid,
-        information  society,
-        institutional  affairs,
-        internal  market,
-        justice  freedom  security,
-        maritime  affairs  and  fisheries,
-        public  health,
-        regional  policy,
-        research  innovation,
-        taxation,
-        transport
-        },
-       xtick=data,
-       x tick label style={rotate=90,anchor=east},
-       %nodes near coords={\pgfmathprintnumber[precision=0]{\pgfplotspointmeta}}
-    ]
-    \addplot [draw=none, fill=blue!30] coordinates {
-        (agriculture, 37)
-	    (audiovisual and media,54) 
-		(budget,36) 
-		(competition,101) 
-		(consumers,190) 
-		(culture,44) 
-		(customs,60) 
-		(development,164) 
-		(economic and monetary affairs,160) 
-		(education training youth,190) 
-		(employment and social policy,427)
-		(energy,150)
-		(enlargement,168)
-		(enterprise,106)
-		(environment,380)
-		(external relations,149)
-		(external trade,69)
-		(fight against fraud,64)
-		(food safety,166)
-		(foreign and security policy,64)
-		(human rights,54)
-		(humanitarian aid,45)
-		(information society,136)
-		(institutional affairs,179)
-		(internal market,296)
-		(justice freedom security,544)
-		(maritime affairs and fisheries,96)
-		(public health, 79)
-		(regional policy,120)
-		(research innovation,98)
-		(taxation,16)
-		(transport,309)  };
-   \addplot [draw=none,fill=red!30] coordinates {
-      (agriculture, 32)
-(audiovisual and media, 24)
-(budget, 32)
-(competition, 86)
-(consumers, 131)
-(culture, 41)
-(customs, 54)
-(development, 99)
-(economic and monetary affairs, 148)
-(education training youth, 148)
-(employment and social policy, 222)
-(energy, 116)
-(enlargement, 103)
-(enterprise, 89)
-(environment, 161)
-(external relations, 104)
-(external trade, 57)
-(fight against fraud, 41)
-(food safety, 116)
-(foreign and security policy, 59)
-(human rights, 54)
-(humanitarian aid, 39)
-(information society, 89)
-(institutional affairs, 150)
-(internal market, 192)
-(justice freedom security, 320)
-(maritime affairs and fisheries, 89)
-(public health, 63)
-(regional policy, 100)
-(research innovation, 91)
-(taxation, 67)
-(transport, 193) };
-\legend{Original, Resampled}
-\end{axis}
-\end{tikzpicture}
-}
-\end{center}
-\captionsetup{justification=centering,margin=2cm}
-\caption{Class distribution of the EUR-Lex summaries corpus, comparing the original
-to the resampled distribution.}
-\label{graph:originalVSresampled}
-\end{figure}
+\begin{table}[!ht]
+\centering
+\begin{tabular}{lcc}
+\hline
+\multicolumn{1}{c}{Category} & Original & Resampled \\ \hline
+Agriculture & 116 & 90 \\
+Audiovisual and Media & 23 & 18 \\
+Budget & 25 & 25 \\
+Competition & 49 & 47 \\
+Consumers & 153 & 125 \\
+Culture & 21 & 21 \\
+Customs & 42 & 39 \\
+Development & 96 & 63 \\
+Economic and Monetary Affairs & 160 & 149 \\
+Education Training Youth & 117 & 102 \\
+Employment and Social Policy & 283 & 174 \\
+Energy & 98 & 74 \\
+Enlargement & 77 & 64 \\
+Enterprise & 58 & 56 \\
+Environment & 274 & 134 \\
+External Relations & 84 & 59 \\
+External Trade & 63 & 56 \\
+Fight Against Fraud & 49 & 31 \\
+Food Safety & 169 & 108 \\
+Foreign and Security Policy & 54 & 49 \\
+Human Rights & 31 & 35 \\
+Humanitarian Aid & 43 & 30 \\
+Information Society & 170 & 149 \\
+Institutional Affairs & 141 & 128 \\
+Internal Market & 465 & 234 \\
+Justice Freedom Security & 346 & 223 \\
+Maritime Affairs and Fisheries & 103 & 90 \\
+Public Health & 52 & 52 \\
+Regional Policy & 61 & 58 \\
+Research Innovation & 61 & 55 \\
+Taxation & 39 & 39 \\
+Transport & 201 & 139 \\ \cline{1-3}
+\end{tabular}
+\caption{Distribution of number of samples in the original dataset and after the applying the resampling}
+\label{table:befforeAfterResampling}
+\end{table}
 
 
 \section{Clustering} \label{clustering}
-Document cluster in information retrieval helps in organization, extraction of topic and text, filtering. The idea here was that given the number of classes and the number of documents per classes as it is a unbalanced dataset,it will be difficult for a classifier to learn on this data. 
 
-Clustering of documents was only possible provided that all the documents $d$ of a category $C$ belong only to that category. Also, it is important to find out what is the number $n$ that the documents must be clustered into. The number of clusters $n$ is determined bu silhouette score \cite{rousseeuw1987silhouettes} and elbow analysis \cite{thorndike1953belongs}. 
+To cluster the data using K-means algorithm, first the value of $k$ is obtained using Silhouette score (see \ref{silout})  and Elbow Analysis (see \ref{elbow}). 
 
-K-Means cluster is used here to cluster the documents. Splitting the documents this way, the number of classes to be predicted by each classifier is reduced thus, resulting in specialization advantage for each classifier. However, the final classification depends on the classification from previous classifiers, so any error introduced will be propagated downwards. This method of division is can be advantageous as we have $32$ classes and it can be a challenge for a single classifier to learn on them given the amount of data.
+Silhoutte score and elbow analysis is computed using \textit{scikit-learn} library. To obtain the silhoutte score and elbow analysis, first the documents from English corpus are converted into tf-idf vectors using the \textit{scikit-learn} library. These tf-idf vectors are then used for training $8$ k-means cluster which produces the cluster assignments for each value of $k$. The value 8 is heuristic as having more than 8 clusters would not be feasible in context of the amount of resources then required for training the classifiers for these clusters and also, dividing data into more than 8 cluster would leave less data for classification in those clusters. The cluster assignments are then used along with the tf-idf matrix to find the silhoutte score. Highest value of silhoutte score means better the assignment of the clusters \ref{silout}
 
-The \ref{} shows the cluster assignments of all the 32 categories of the EUR-Lex summaries.
+The values of silhoutte score obtained for EUR-Lex summaries are listed below in the \ref{table:silhoutteScore}
+\begin{table}[!ht]
+\centering
+\begin{tabular}{cc}
+\hline
+$k$ & Silhoutte score \\ \hline
+2 & 0.05693 \\
+3 & 0.04417 \\
+4 & 0.04749 \\
+5 & 0.05515 \\
+6 & 0.05480 \\
+7 & 0.05647 \\
+8 & 0.05537 \\ \hline
+\end{tabular}
+\caption{Silhoutte scores for 8 values of $k$}
+\label{table:silhoutteScore}
+\end{table}
+
+And the elbow analysis for the same is shown in the \ref{fig:elbowAT2}, which indicates that the data should be divided into 2 clusters. The silhoutte score is high at 2 clusters, that means that other values of $k$ will not model the data better. 
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics{pics/ElbowAT2.jpg}
+    \caption{Elbow analysis validating the value of $k$ at 2}
+    \label{fig:elbowAT2}
+\end{figure}
+
+After obtaining the value of $k = 2$ for the number of clusters, the next step is to apply constrained k-means clustering, for this an open source implementation of constrained k-means is used here called as COP-Kmeans \footnote{https://github.com/Behrouz-Babaki/COP-Kmeans} \cite{behrouz_babaki_2017_831850}. 
+
+The COP-Kmenas requires dataset, the value of k, and two list of constrains (must-link and cannot-link). As mentioned already, no prior information is available for the cannot-link constrains hence, only must-link constrains are applied. 
+
+The \ref{table:ClusterAssignments32Classes} shows the cluster assignments of all the 32 categories of the EUR-Lex summaries obtained after applying COP-Kmeans with $k=2$.
+
 
 \begin{table}[!ht]
 \centering
@@ -256,17 +188,17 @@ Transport & 1 \\ \hline
 \label{table:ClusterAssignments32Classes}
 \end{table}
 
-
+\clearpage
 \section{Training the Word Vectors}
 
-The model used in creation of the word vectors is a neural network, and neural networks are data hungry as it requires a lot of data to train them properly. As a result, another domain specific dataset is used in this experiment because dataset used for classification is small. Hence, the whole EUR-Lex dataset was used as it contains 19,348 documents mostly consisting regulations, decisions and directives of European Union \cite{jf:SemanticLaw}.
+The model used in creation of the word vectors is a neural network, and neural networks are data hungry as it requires a lot of data to train them properly. As a result, another domain-specific dataset is used in this experiment because dataset used for classification is small. Hence, the whole EUR-Lex dataset was used as it contains 19,348 documents mostly consisting regulations, decisions and directives of European Union \cite{jf:SemanticLaw}.
 
 \subsection{Training Cross Lingual Word Embedding}\label{implementationCrossLingual}
 
 I will be using the technique suggested by Duong et. al \cite{duong-EtAl:2016:EMNLP} (see \ref{backgroundCrosslingual}).
-The dataset used for creating a domain specific word embeddings is the EUR-Lex dataset, as the dataset used for classification (EUR-Lex summaries) is less compared to the EUR Lex dataset. For creating bilingual dictionary, \textit{EuroVoc} thesaurus \cite{steinberger2002cross} provided by Publication office of European Union will be used. It is available in 24 official languages recognised by European Union. This thesaurus is domain specific hence it does not involve common words that might occur in the documents. Due to this reason, this thesaurus is combined with bilingual dictionaries that are available from \textit{Facebook MUSE} \cite{conneau2017word}. This bilingual dictonaries were created using Facebook's internal translation tools. The authors claims that these dictionaries handle the polysemy of the words better. This combined bilingual dictionary with the original EUR-Lex dataset was used to create the legal domain specific bilingual word embeddings. 
+The dataset used for creating a domain-specific word embeddings is the EUR-Lex dataset, as the dataset used for classification (EUR-Lex summaries) is less compared to the EUR Lex dataset. For creating bilingual dictionary, \textit{EuroVoc} thesaurus \cite{steinberger2002cross} provided by Publication office of European Union will be used. It is available in 24 official languages recognised by European Union. This thesaurus is domain-specific hence it does not involve common words that might occur in the documents. Due to this reason, this thesaurus is combined with bilingual dictionaries that are available from \textit{Facebook MUSE} \cite{conneau2017word}. This bilingual dictonaries were created using Facebook's internal translation tools. The authors claims that these dictionaries handle the polysemy of the words better. This combined bilingual dictionary with the original EUR-Lex dataset was used to create the legal domain-specific bilingual word embeddings. 
 
-For creating General purpose word embedding, Facebook's MUSE python library \cite{conneau2017word} (see \ref{backgroundCrosslingual}) is used, first English and German language word vectors are obtained from Facebook's Fasttext library and then MUSE library align them in a single vector space, after the alignment both the vectors can be combined to be used for classification purpose. 
+For creating general-purpose word embedding, Facebook's MUSE python library \cite{conneau2017word} (see \ref{backgroundCrosslingual}) is used, first English and German language word vectors are obtained from Facebook's Fasttext library and then MUSE library align them in a single vector space, after the alignment both the vectors can be combined to be used for classification purpose. 
 
 
 \section{Architecture and Training}
@@ -283,17 +215,17 @@ On the other hand early stopping regularization is implicit which does not affec
 
 Dropout, L2 regularization and early stopping can be configured in \textit{keras} while building the model. During the training we split 30\% of training data for validation purpose so that there is no need for splitting validation data at the time when we split the dataset into training and testing.
 
-\subsection{Question 1} \label{impQuestion1}
+\subsection{First Research Question} \label{impQuestion1}
 
-In the first research question Support Vector Machines are compared to Bidirectional LSTMs. When using an SVM algorithm we do not know beforehand the value of $C$ (See \ref{sec:svm}). To find that out, we need some kind of selection mechanism must be done. The aim is to find out the value of $C$ such that it can predict accurately on unknown data. One method of finding the value of $C$ is called \textit{Grid Search Cross Validation} (Grid Search CV). This method is straight forward, first we select the a number of values of $C$, then we divide the training set into $n$ equal sized subsets. Then we train the SVM using one value from $C$ on the $n-1$ subset and predict using 1 subset that left, we repeat this process until each and every instance of the training set is predicted once and for every value of $C$.
+In the first research question Support Vector Machines are compared to \glspl{BiLSTM}. When using an \gls{SVM} algorithm we do not know beforehand the value of $C$ (See \ref{sec:svm}). To find that out, we need some kind of selection mechanism must be done. The aim is to find out the value of $C$ such that it can predict accurately on unknown data. One method of finding the value of $C$ is called \textit{Grid Search Cross Validation} (Grid Search CV). This method is straight forward, first we select the a number of values of $C$, then we divide the training set into $n$ equal sized subsets. Then we train the \gls{SVM} using one value from $C$ on the $n-1$ subset and predict using 1 subset that left, we repeat this process until each and every instance of the training set is predicted once and for every value of $C$.
 
 This process is computationally expensive as each subset will be trained on every value of $C$. We used the following values of $C$ (0.001,0.01, 0.1,1,10,100) and found 1 to be preforming better.
 
-To train SVM, TF-IDF matrix of the English corpus is created using the \textit{sklearn}\footnote{https://scikit-learn.org/stable/} python library and then this TF-IDF matrix is used to train a linear SVM with the $C$ value of 1 for the same \textit{sklearn} library. 
+To train \gls{SVM}, \gls{TF-IDF} matrix of the English corpus is created using the \textit{scikit-learn}\footnote{https://scikit-learn.org/stable/} python library and then this \gls{TF-IDF} matrix is used to train a linear \gls{SVM} with the $C$ value of 1 for the same \textit{scikit-learn} library. 
 
-The SVM is compared against two Bidirectional LSTM models, one without clustered data on single language (English) and one with clustered data (English and German). The data used for training both SVM and Bidirectional LSTM is different, while SVM is trained on whole documents, Bidirectional LSTMs are trained on sentences created using sliding window technique (see \ref{backgroundSlidingWindow}, \ref{question1}). The \ref{fig:PlainLSTM} shows the architecture of the Bidirectional LSTM model trained on English corpus with all the 32 classes. The Bidirectional LSTM models were created using \textit{Keras}\footnote{https://keras.io/} python library. 
+The \gls{SVM} is compared against two \gls{BiLSTM} models, one without clustered data on single language (English) and one with clustered data (English and German). The data used for training both \gls{SVM} and \gls{BiLSTM} is different, while \gls{SVM} is trained on whole documents, \glspl{BiLSTM} are trained on sentences created using sliding window technique (see \ref{backgroundSlidingWindow}, \ref{question1}). The \ref{fig:PlainLSTM} shows the architecture of the \gls{BiLSTM} model trained on English corpus with all the 32 classes. The \gls{BiLSTM} models were created using \textit{Keras}\footnote{https://keras.io/} python library. 
 
-The hyperparameter for Bidirectional LSTM training on English corpus without clustered data is listed in \ref{table:hyperparameterLSTM32class}. 
+The hyperparameter for \gls{BiLSTM} training on English corpus without clustered data is listed in \ref{table:hyperparameterLSTM32class}. 
 
 \begin{table}[!ht]
 \centering
@@ -312,7 +244,7 @@ $l2$ regularization 2 & 0.01 \\
 Learning Rate & 0.001 \\ \hline
 \end{tabular}
  \captionsetup{justification=centering,margin=2cm}
-\caption{Hyperparameter of Bidirectional LSTM for training English language corpus without clustered data}
+\caption{Hyperparameter of \gls{BiLSTM} for training English language corpus without clustered data}
 \label{table:hyperparameterLSTM32class}
 \end{table}
 
@@ -321,13 +253,13 @@ Learning Rate & 0.001 \\ \hline
     \centering
     \includegraphics[width=9cm, height=12cm]{pics/EN_32.png}
     \captionsetup{justification=centering,margin=2cm}
-    \caption{Architecture of Bidirectional LSTM for training English language corpus without clustered data}
+    \caption{Architecture of \gls{BiLSTM} for training English language corpus without clustered data}
     \label{fig:PlainLSTM}
 \end{figure}
 \clearpage
-The hyperparameter for the Bidirectional LSTMs used on clustered data is exactly similar to the one without clustered data trained on English laguage \ref{table:hyperparameterLSTM32class}
+The hyperparameter for the \glspl{BiLSTM} used on clustered data is exactly similar to the one without clustered data trained on English laguage \ref{table:hyperparameterLSTM32class}
 
-The architecture for Bidirectional LSTM trained on cluster 1 and cluster 2 data is shown in \ref{fig:cluster1&2LSTM}
+The architecture for \gls{BiLSTM} trained on cluster 1 and cluster 2 data is shown in \ref{fig:cluster1&2LSTM}
 
 
 
@@ -335,18 +267,18 @@ The architecture for Bidirectional LSTM trained on cluster 1 and cluster 2 data 
     \centering
     \includegraphics[width=9cm, height=12cm]{pics/LSTM_LEGALEMB_CLUSTER_1.png}
     \captionsetup{justification=centering,margin=2cm}
-    \caption{Architecture of Bidirectional LSTM for training English and German language corpus on cluster 1 and cluster 2 data}
+    \caption{Architecture of \gls{BiLSTM} for training English and German language corpus on cluster 1 and cluster 2 data}
     \label{fig:cluster1&2LSTM}
 \end{figure}
 
 
 \clearpage
 
-\subsection{Question 2}
-In the second question general purpose embeddings, Facebook's MUSE is compared to word embeddings created using EUR-Lex corpus (see \ref{implementationCrossLingual}).
+\subsection{Second Research Question}
+In the second question general-purpose embeddings, Facebook's MUSE is compared to word embeddings created using EUR-Lex corpus (see \ref{implementationCrossLingual}).
 
-Both the approaches using the general purpose resource and the domain specific resources, uses Bidirectional LSTMs trained on clustered data, similar to the Bidirectional LSTMs in \ref{impQuestion1}
-The hyperparameters for the both approaches is listed in \ref{table:FBMuseGeneralpurpose} for general purpose embeddings and \ref{table:DomainSpecificHyperparameter} for domain specific embeddings.
+Both the approaches using the general-purpose resource and the domain-specific resources, uses \glspl{BiLSTM} trained on clustered data, similar to the \glspl{BiLSTM} in \ref{impQuestion1}
+The hyperparameters for the both approaches is listed in \ref{table:FBMuseGeneralpurpose} for general-purpose embeddings and \ref{table:DomainSpecificHyperparameter} for domain-specific embeddings.
 
 \begin{table}[!ht]
 \centering
@@ -365,7 +297,7 @@ $l2$ regularization 2 & 0.01 \\
 Learning Rate & 0.001 \\ \hline
 \end{tabular}
 \captionsetup{justification=centering,margin=2cm}
-\caption{Hyperparameter of Bidirectional LSTM for training on English and German language with clustered data using general purpose word embedding created using Facebook's MUSE python library}
+\caption{Hyperparameter of \gls{BiLSTM} for training on English and German language with clustered data using general-purpose word embedding created using Facebook's MUSE python library}
 \label{table:FBMuseGeneralpurpose}
 \end{table}
 
@@ -386,19 +318,19 @@ $l2$ regularization 2 & 0.01 \\
 Learning Rate & 0.001 \\ \hline
 \end{tabular}
 \captionsetup{justification=centering,margin=2cm}
-\caption{Hyperparameter of Bidirectional LSTM for training on English and German language with clustered data using domain specific word embedding created from EUR-Lex dataset}
+\caption{Hyperparameter of \gls{BiLSTM} for training on English and German language with clustered data using domain-specific word embedding created from EUR-Lex dataset}
 \label{table:DomainSpecificHyperparameter}
 \end{table}
 
-The only difference between the training parameters of both the approaches is the embedding dimensions, the general purpose embedding are in 300 dimensions whereas the domain specific embedding are in 200 dimensions. The reason for this difference is that while aligning two embeddings in a single vector space is a computationally inexpensive task, then learning the embedding from scratch for two languages. Decreasing the dimensions will result in the reduction of training time and hence the dimension of domain specific word embeddings are 100 less than general purpose embeddings.
+The only difference between the training parameters of both the approaches is the embedding dimensions, the general-purpose embedding are in 300 dimensions whereas the domain-specific embedding are in 200 dimensions. The reason for this difference is that while aligning two embeddings in a single vector space is a computationally inexpensive task, then learning the embedding from scratch for two languages. Decreasing the dimensions will result in the reduction of training time and hence the dimension of domain-specific word embeddings are 100 less than general-purpose embeddings.
 
-The architecture for Bidirectional LSTM trained using general purpose word embeddings is shown in \ref{fig:FBMuseCluster} and Bidirectional LSTM trained using domain specific word embeddings is show in \ref{fig:LegalEmbCluster}.
+The architecture for \gls{BiLSTM} trained using general-purpose word embeddings is shown in \ref{fig:FBMuseCluster} and \gls{BiLSTM} trained using domain-specific word embeddings is show in \ref{fig:LegalEmbCluster}.
 
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=9cm, height=12cm]{pics/FBMUSE_Untrained_cluster_1.png}
     \captionsetup{justification=centering,margin=2cm}
-    \caption{Architecture of Bidirectional LSTM for training English and German language corpus on cluster 1 and cluster 2 data using general purpose embeddings created using Facebook MUSE python library}
+    \caption{Architecture of \gls{BiLSTM} for training English and German language corpus on cluster 1 and cluster 2 data using general-purpose embeddings created using Facebook MUSE python library}
     \label{fig:FBMuseCluster}
 \end{figure}
 
@@ -408,14 +340,14 @@ The architecture for Bidirectional LSTM trained using general purpose word embed
     \centering
     \includegraphics[width=9cm, height=12cm]{pics/LSTM_LEGALEMB_CLUSTER_1.png}
     \captionsetup{justification=centering,margin=2cm}
-    \caption{Architecture of Bidirectional LSTM for training English and German language corpus on cluster 1 and and cluster 2 data using general purpose embeddings trained on EUR-Lex dataset}
+    \caption{Architecture of \gls{BiLSTM} for training English and German language corpus on cluster 1 and and cluster 2 data using general-purpose embeddings trained on EUR-Lex dataset}
     \label{fig:LegalEmbCluster}
 \end{figure}
 
 For evaluating the predictions, each document is divided into sentences using the same sliding window technique used to create the training data, then predictions are stored for every sentence of a document and the predictions are summed up and the class with highest value is considered the class of the document. 
 
-\subsection{Question 3}
-The third question evaluates the capability of training multiple languages in a single Bidirectional LSTM model compared to training different models for different languages. For this purpose two models one for the English and another for German language will be compared to a single model trained on both the English and the German language together.
+\subsection{Third Research Question}
+The third question evaluates the capability of training multiple languages in a single \gls{BiLSTM} model compared to training different models for different languages. For this purpose two models one for the English and another for German language will be compared to a single model trained on both the English and the German language together.
 
 Training on the clustering data will only be performed in the case where both the languages are used in a single model, this is due the fact that performing clustering on a single language will reduce the number of samples in each cluster significantly. So for this question one model with both the languages will be trained without clustering and one with clustering. 
 
@@ -438,7 +370,7 @@ $l2$ regularization 2 & 0.03 \\
 Learning Rate & 0.001 \\ \hline
 \end{tabular}
 \captionsetup{justification=centering,margin=2cm}
-\caption{Hyperparameters of Bidirectional LSTM for training on the English and the German language with and without clustered data and trained on both languages separately}
+\caption{Hyperparameters of \gls{BiLSTM} for training on the English and the German language with and without clustered data and trained on both languages separately}
 \label{table:hyperParameterQuestion3}
 \end{table}
 
@@ -446,7 +378,7 @@ Learning Rate & 0.001 \\ \hline
     \centering
     \includegraphics[width=9cm, height=12cm]{pics/Question3.png}
     \captionsetup{justification=centering,margin=2cm}
-    \caption{Architecture of Bidirectional LSTM for training on the English and the German language with and without clustered data and trained on both languages separately}
+    \caption{Architecture of \gls{BiLSTM} for training on the English and the German language with and without clustered data and trained on both languages separately}
     \label{fig:architectureQuestion3}
 \end{figure}
 

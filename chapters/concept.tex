@@ -7,11 +7,11 @@ This chapter describes in detail the conceptual aspects of this thesis. The conc
 In the first phase, the data collection techniques are desribed in detail, also how and why the data was cleaned in order to make it suitable for machine learning algorithm is described. 
 
 \subsection*{Data Collection}
-Legal laws are written to be applicable in various situations. For example, a law for agricultural products may be applicable in situations where trading of goods happens.  High-level categories of multilingual legal documents provided by the European Union help to navigate in the legislative corpus,  they are also comprised of many languages so that can be used by various Nations. The applicability of these legal texts in various situations makes the classification of these texts on the multi-label classification problem.
+Legal laws are written to be applicable in various situations. For example, a law for agricultural products may be applicable in cases where trading of goods happens.  High-level categories of multilingual legal documents provided by the European Union help to navigate in the legislative corpus. They are also comprised of many languages so that is can be used by various Nations. The applicability of these legal texts in different situations makes the classification of these texts on the multi-label classification problem.
 
-To answer the question described in , a dataset has to be acquired. There are many datasets available for legal domains. CFPB Credit Card Agreements DB\footnote{http://www.consumerfinance.gov/credit-cards/agreements/}, EUR-Lex Dataset\footnote{http://www.ke.tu-darmstadt.de/resources/eurlex} are some well known datasets for legal domain specific tasks. However, the CFPB credit card agreements database is not available in German language and also it is about one specific topic in the legal domain. The EUR-Lex Dataset is a large dataset available in both English and German, which was scraped from Publication's office of European Union's website \cite{mencia2010efficient}. This dataset consist of 19,348 documents for a single language divided into 201 topics. This dataset was too large to handle as there are 201 classes and given the amount of resources available to scrap, process and train the models. So instead EUR-Lex summaries were selected. This EUR-Lex Summaries\footnote{https://eur-lex.europa.eu/browse/summaries.html} are also from the Publication office of European Union's Parliament. These summaries are the European Union's laws explained and translated into reader-friendly language. They cover 32 topics which correspond to the activity areas of the European Union.These summaries are available in multiple languages. For this thesis, only \textit{English and German} languages are considered due to their availability across most documents and also the amount of resource available for processing and training the machine learning algorithms were limited. The summaries are not available in easy click to download manner and hence it has to be scraped off of the website of European Union's publication office's website. These summaries changes frequently as the laws of the union changes or if a new law is introduced and as stated above these summaries might belong to multiple classes. 
+There are many datasets available for legal domains. CFPB Credit Card Agreements DB\footnote{http://www.consumerfinance.gov/credit-cards/agreements/}, EUR-Lex Dataset\footnote{http://www.ke.tu-darmstadt.de/resources/eurlex} are some well known datasets for legal domain-specific tasks. However, the CFPB credit card agreements database is not available in the German language and also it is about one specific topic in the legal domain. The EUR-Lex Dataset is a large dataset available in both English and German, which was scraped from Publication's office of European Union's website \cite{mencia2010efficient}. This dataset consists of 19,348 documents for a single language divided into 201 topics. This dataset was too large to handle as there are 201 classes and given the amount of resources available to scrap, process and train the models. So instead EUR-Lex summaries were selected. This EUR-Lex Summaries\footnote{https://eur-lex.europa.eu/browse/summaries.html} are also from the Publication office of European Union's Parliament. These summaries are the European Union's laws explained and translated into reader-friendly language. They cover 32 topics which correspond to the activity areas of the European Union. These summaries are available in multiple languages. For this thesis, only \textit{English and German} languages are considered due to their availability across most documents and also the amount of resource available for processing and training the machine learning algorithms were limited. The summaries are not available in an easy click to download manner, and hence it has to be scraped off of the website of the European Union's publication office's website. These summaries frequently change as the laws of the union changes or if a new law is introduced and as stated above these summaries might belong to multiple classes. 
 
-While scraping the summaries, data from both languages need to be scraped together. This ensures that we are not missing out any summary from either of the language. Saving the summaries from different languages separately would create problem of data leaking, which is result of splitting data randomly for training and testing. For example, \textbf{Doc A} which belongs to \textbf{class 1} in English and \textbf{Doc B} which is same but in German. Now, when spitting the data for training and testing \textbf{Doc A} might end up in training set and \textbf{Doc B} might end up in testing set. 
+While scraping the summaries, data from both languages need to be scraped together. This ensures that we are not missing out any summary from either of the languages. Saving the summaries from different languages separately would create the problem of data leaking, which is the result of splitting data randomly for training and testing. For example, \textbf{Doc A} which belongs to \textbf{class 1} in English and \textbf{Doc B} which is same but in German. Now, when spitting the data for training and testing \textbf{Doc A} might end up in the training set, and \textbf{Doc B} might end up in the testing set. 
 
 \subsection*{Data Cleaning}\label{ConceptCleaning}
 
@@ -118,7 +118,7 @@ This method of resampling has its own limitation. As the samples from majority c
 
 \subsection*{Monolingual and Bilingual Word Embeddings}
 
-Training the word embeddings is the last step of the second phase. Monolingual word embeddings for training Bidirectional LSTM is trained using \textit{Skip-gram} method using Fasttext\footnote{https://fasttext.cc/docs/en/crawl-vectors.html}\cite{graves2009novel} tool. These embedding were trained on EUR-Lex corpus rather than EUR-Lex summaries dataset as the EUR-Lex summaries dataset is considered less to train satisfactory results. These monolingual word embeddings are in English Language and are in 300 dimensions
+Training the word embeddings is the last step of the second phase. Monolingual word embeddings for training \gls{BiLSTM} is trained using \textit{Skip-gram} method using Fasttext\footnote{https://fasttext.cc/docs/en/crawl-vectors.html}\cite{graves2009novel} tool. These embedding were trained on EUR-Lex corpus rather than EUR-Lex summaries dataset as the EUR-Lex summaries dataset is considered less to train satisfactory results. These monolingual word embeddings are in English Language and are in 300 dimensions
 
 For training general purpose multilingual word embedding we will be again using Fasttext which provides word embeddings in 157 languages on Wikipedia\footnote{https://www.wikipedia.org/} and Common Crawl\footnote{http://commoncrawl.org/} data and is trained using Continuous bag-of-words model in dimension 300. But as the word embeddings for multiple languages can not be combined together because they belong in different vector space. Facebook's MUSE\footnote{https://github.com/facebookresearch/MUSE} \cite{conneau2017word} with help of parallel dictionaries was used to align both word embeddings into a single vector space. Upon alignment, both the embeddings (English and German) can be simply concatenated and can be used for classification purpose. These word embeddings are created from various sources, it contains text from various domains and hence it will henceforth be refereed to as general purpose word embeddings.
 
@@ -134,12 +134,12 @@ The third phase goes into details regarding the conceptual aspect of the three r
 \subsection{Research Question 1:} \label{question1}
 The first research question is:
 \begin{quote}
-    Can \textit{Bidirectional LSTM} achieve better results in terms of evaluation metrics (Precision, Recall and F-Score) than the thoroughly studied text classification methods such as \textit{Support Vector Machines}?
+    Can \textit{\gls{BiLSTM}} achieve better results in terms of evaluation metrics (Precision, Recall and F-Score) than the thoroughly studied text classification methods such as \textit{Support Vector Machines}?
 \end{quote}
 
-\ref{fig:FlowResearchQuestion1} shows the approach employed for the above mentioned research question. After acquiring the data from EUR-Lex website, the data was cleaned or prepossessed (see \ref{ConceptCleaning}). Upon preprocessing, the textual data needs to be converted using suitable text representations technique according to the algorithm it will be trained on. Here, there are two algorithms being tested, Support Vector Machines (SVM) and Bidirectional LSTM, and both of them employ different techniques to represent text for training (See \ref{backgroundTextRepresentation}). The SVM uses the TF-IDF representation whereas the LSTM uses the Word Embeddings. 
+\ref{fig:FlowResearchQuestion1} shows the approach employed for the above mentioned research question. After acquiring the data from EUR-Lex website, the data was cleaned or prepossessed (see \ref{ConceptCleaning}). Upon preprocessing, the textual data needs to be converted using suitable text representations technique according to the algorithm it will be trained on. Here, there are two algorithms being tested, \gls{SVM} and \gls{BiLSTM}, and both of them employ different techniques to represent text for training (See \ref{backgroundTextRepresentation}). The \gls{SVM} uses the \gls{TF-IDF} representation whereas the LSTM uses the Word Embeddings. 
  
-Due to hardware limitations training Bidirectional LSTM is difficult to train if the length of a single instance is very long. Hence each document was divided into sentences using sliding window technique (See \ref{backgroundSlidingWindow}) and document label were assigned to each sentence created from that document. 
+Due to hardware limitations training \gls{BiLSTM} is difficult to train if the length of a single instance is very long. Hence each document was divided into sentences using sliding window technique (See \ref{backgroundSlidingWindow}) and document label were assigned to each sentence created from that document. 
 
 \begin{figure}[!ht]
     \centering
@@ -148,17 +148,17 @@ Due to hardware limitations training Bidirectional LSTM is difficult to train if
     \label{fig:FlowResearchQuestion1}
 \end{figure}
 
-To see the effect of clustering on the data for classification purpose, one classification model will be trained on clustered data. The clustered data will contain documents from corpora of both the languages, this is because clustering on corpus of a single language will result in very less data for the clusters. This will show us if there is any improvement in classification performance of the classifier with the specialization advantage discussed in \ref{concpeClustering}. The classifier will then be trained on these clusters of data. The training workflow for the Bidirectional LSTM (with clustering) is shown below in \ref{fig:clusterFlowClassification}, 
+To see the effect of clustering on the data for classification purpose, one classification model will be trained on clustered data. The clustered data will contain documents from corpora of both the languages, this is because clustering on corpus of a single language will result in very less data for the clusters. This will show us if there is any improvement in classification performance of the classifier with the specialization advantage discussed in \ref{concpeClustering}. The classifier will then be trained on these clusters of data. The training workflow for the \gls{BiLSTM} (with clustering) is shown below in \ref{fig:clusterFlowClassification}, 
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=10cm,keepaspectratio]{pics/clusterClassificationFlow.png}
+    \includegraphics[width=10cm,keepaspectratio]{pics/approach_cls.png}
     \caption{Classification workflow for clustered data}
     \label{fig:clusterFlowClassification}
 \end{figure}
 
 \subsubsection*{Evaluation} \label{evaluationQuestionOne}
-The SVMs are trained on full documents and the LSTMs are trained on the sentences created using the  sliding window technique, for this reason, the results from both the models can not be compared. Ferguson et al.,(2009) \cite{ferguson2009exploring} preformed sentiment analysis of the financial blogs on paragraph-level 
+The \glspl{SVM} are trained on full documents and the \gls{BiLSTM} are trained on the sentences created using the  sliding window technique, for this reason, the results from both the models can not be compared. Ferguson et al.,(2009) \cite{ferguson2009exploring} preformed sentiment analysis of the financial blogs on paragraph-level 
 annotated text, they summed up the predictions given by the classifier. In our case, the classifier will give probability to each sentence belonging to each class. As each document comprises of sentences, if we add all the probabilities for each class across all the sentences of a document we get probabilities of each class for that document and then we choose the class with highest probability. The classification algorithm trained on clustered data would yield two different sets of predictions,i.e one for first cluster and one for the second cluster these scores will then be averaged to get the scores of the classification model on the whole dataset.
 
 The \ref{table:ListQuestionFirstQuestion} below lists all the classification algorithms for the first research question,
@@ -170,10 +170,10 @@ The \ref{table:ListQuestionFirstQuestion} below lists all the classification alg
 \begin{tabular}{>{\centering\arraybackslash}m{3cm}>{\centering\arraybackslash}m{3cm}>{\centering\arraybackslash}m{1.5cm}>{\centering\arraybackslash}m{2.3cm}>{\centering\arraybackslash}m{3cm}}
 \hline
 \textbf{Classification Algorithm} & \textbf{Text Representation} & \textbf{Corpus} & \textbf{Type of training} & \textbf{Evaluation Strategy} \\ [0.2cm]\hline
-Support Vector Machines & TF-IDF & English & Non Clustered & Document Level \\[0.3cm]
-Bidirectional LSTM & Monolingual Word Embeddings (Legal Text) & English & Non Clustered & Document Level and Sentence Level \\[0.3cm]
-Bidirectional LSTM & Bilingual Word Embedding (Legal Text) & English and German & Non Clustered & Document Level and Sentence Level \\[0.3cm]
-Bidirectional LSTM & Bilingual Word Embedding (Legal Text) & English and German & Clustered & Document Level and Sentence Level \\ \hline
+Support Vector Machines & \gls{TF-IDF} & English & Non Clustered & Document Level \\[0.3cm]
+\gls{BiLSTM} & Monolingual Word Embeddings (Legal Text) & English & Non Clustered & Document Level and Sentence Level \\[0.3cm]
+\gls{BiLSTM} & Bilingual Word Embedding (Legal Text) & English and German & Non Clustered & Document Level and Sentence Level \\[0.3cm]
+\gls{BiLSTM} & Bilingual Word Embedding (Legal Text) & English and German & Clustered & Document Level and Sentence Level \\ \hline
 \end{tabular}
 \caption{Classification algorithms for the first research question}
 \label{table:ListQuestionFirstQuestion}
@@ -195,7 +195,7 @@ The second research question is:
     \label{fig:FlowResearchQuestion2}
 \end{figure}
 
-\ref{fig:FlowResearchQuestion2} shows the general workflow for the second question. For this question we compare the general purpose resources, that is word embeddings for training the LSTM, with the word embeddings trained on the legal corpus. 
+\ref{fig:FlowResearchQuestion2} shows the general workflow for the second question. For this question we compare the general purpose resources, that is word embeddings for training the \gls{BiLSTM}, with the word embeddings trained on the legal corpus. 
 
 As the domain specific word embeddings are create using legal domain specific data this word embedding will not be further trained. In case of general purpose word embeddings two models will be trained - one with frozen (embedding weights will not be updated during the training process) embedding layer and other model will train the word embeddings. This is done to see if further training the general purpose word embeddings produces results comparable to the ones trained on legal data.
 
@@ -208,9 +208,9 @@ The \ref{table:ListQuestionecondQuestion} below lists all the classification alg
 \begin{tabular}{>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{2.9cm}>{\centering\arraybackslash}m{1.8cm}>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{1.9cm}>{\centering\arraybackslash}m{2cm}}
 \hline
 \textbf{Classification Algorithm} & \textbf{Word Embeddings} & \textbf{Embedding Training} & \textbf{Corpus} & \textbf{Type of training} & \textbf{Evaluation Strategy} \\ \hline
-Bidirectional LSTM & Domain specific Bilingual(Legal Text) & False & English and German & Non Clustered & Document Level and Sentence Level \\
-Bidirectional LSTM & General Purpose Bilingual(Facebook's MUSE) & False & English and German & Non Clustered & Document Level and Sentence Level \\
-Bidirectional LSTM & General Purpose Bilingual(Facebook's MUSE) & True & English and German & Clustered & Document Level and Sentence Level \\ \hline
+\gls{BiLSTM} & Domain specific Bilingual(Legal Text) & False & English and German & Non Clustered & Document Level and Sentence Level \\
+\gls{BiLSTM} & General Purpose Bilingual(Facebook's MUSE) & False & English and German & Non Clustered & Document Level and Sentence Level \\
+\gls{BiLSTM} & General Purpose Bilingual(Facebook's MUSE) & True & English and German & Clustered & Document Level and Sentence Level \\ \hline
 \end{tabular}
 \caption{Classification algorithms for the second research question}
 \label{table:ListQuestionSecondQuestion}
@@ -221,7 +221,7 @@ Bidirectional LSTM & General Purpose Bilingual(Facebook's MUSE) & True & English
 The third research question is:
 
 \begin{quote}
-    Can \textit{LSTM} perform better when training multiple languages in single model, compared to training one model for each language separately?
+    Can \textit{\gls{BiLSTM}} perform better when training multiple languages in single model, compared to training one model for each language separately?
 \end{quote}
 
 \ref{fig:FlowResearchQuestion3} shows the general workflow for the third research question. In this question we explore the possible effects of having data in multiple languages on a classifier. C.-P. Wei et al.(2014)\cite{Wei:2014:EPD:2566999.2567111} suggested that when the training set for a single language is small it is less representative of the target semantic space and a classifier trained on this data set would not yield satisfactory results. However, if the text from another language is available for the predefined category then it can be beneficial and can improve the effectiveness of the classifier for the previous language. The naïve approaches of handling such data is to build separate classifiers for separate languages. This naïve method does not take the benefit of availability of data across different language for a defined category. 
@@ -242,10 +242,10 @@ The training of all the classifiers for this question will be done in the simila
 \begin{tabular}{>{\centering\arraybackslash}m{2.9cm}>{\centering\arraybackslash}m{2.9cm}>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{2cm}>{\centering\arraybackslash}m{2.6cm}}
 \hline
 \textbf{Classification Algorithm} & \textbf{Word Embeddings} & \textbf{Corpus} & \textbf{Type of training} & \textbf{Evaluation Strategy} \\ \hline
-Bidirectional LSTM & Monolingual Domain Specific (Legal Text) & English & Non Clustered & Document Level \&  Sentence Level \\ [0.2cm]
-Bidirectional LSTM & Monolingual Domain Specific (Legal Text) & German & Non Clustered & Document Level \&  Sentence Level \\[0.2cm]
+\gls{BiLSTM} & Monolingual Domain Specific (Legal Text) & English & Non Clustered & Document Level \&  Sentence Level \\ [0.2cm]
+\gls{BiLSTM} & Monolingual Domain Specific (Legal Text) & German & Non Clustered & Document Level \&  Sentence Level \\[0.2cm]
 
-Bidirectional LSTM & Bilingual Domain Specific (Legal Text) & English and German & Clustered & Document Level \&  Sentence Level \\ \hline
+\gls{BiLSTM} & Bilingual Domain Specific (Legal Text) & English and German & Clustered & Document Level \&  Sentence Level \\ \hline
 \end{tabular}
 \caption{Classification algorithms for the third research question}
 \label{table:ListQuestionThirdQuestion}

@@ -1,7 +1,37 @@
 \ifgerman{\chapter*{Inhaltsangabe}}{\chapter*{Abstract}}
+With the plethora of legal corpora available online, it can be overwhelming and hard to comprehend for a non-domain expert. \gls{AI} can be helpful in the organization and exploration of these document \cite{merkl1997exploration}.  Classifying these legal texts into higher level categories using machine learning and deep learning can not only help in the organization of these documents but can also help the non-domain user to navigate and find the relevant documents easily. The diversity, the advantages and the drawbacks of these algorithms makes choosing the algorithm a time-consuming and challenging process.
 
-\hint{Besides the title, the abstract is the most important part of your thesis, as most readers will only read title and abstract. Your goal is to advertise the rest of the thesis for potential readers. For that, you briefly explain what you are focusing on in the thesis. With a misleading abstract, you will miss interested readers and maybe even attract readers with wrong assumptions about your work which will stop reading soon. The abstract should describe the general area as well as the most interesting insights of the work. It is crucial to find the right level of abstraction and length. An abstract typically consists of one paragraph that is significantly shorter than the introduction.}
+This thesis goes into investigating a few popular machine learning and deep learning algorithms with different configurations on EUR-Lex Summaries legal data for text classification. It also examines the feasibility of general-purpose resources used by deep learning algorithms for their performance on legal domain-specific data and the performance benefits of using multilingual data which is widely available for legal corpus. These experiments help us in exploring the viability of these algorithms in domain-specific settings and improve our decision-making process.  For the investigation, three different research questions are formulated, first comparing supervised machine learning algorithm  \gls{SVM} to deep learning algorithm \gls{BiLSTM}, second comparing the general-purpose word embeddings to the domain-specific word embeddings for training \gls{BiLSTM} and third comparing performance evaluation of multilingual data to monolingual ones in \gls{BiLSTM}.
 
-\hint{Abstracts typically follow the same structure. You start by describing the research area as well as the general and the specific problem you are focusing on. Then, you outline how you approach the problem in terms of concepts and evaluations. Finally, you close with the most interesting insights that you gained and why they are relevant for the research area.}
+Furthermore, with the limited labeled legal domain dataset, and class imbalance, several alternate training, and evaluation strategies were formulated. The training is done on sentences of the document with and without clustering, and the evaluation is done of sentences as well as on documents through the combination of predictions from the sentence. During the evaluation it is observed that adding more languages in case of \gls{BiLSTM} indeed increase the performance of the classifier.
 
-\todots{write the Abstract}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
