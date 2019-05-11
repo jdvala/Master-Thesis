@@ -8,6 +8,48 @@
 	final,    % removes all TODOs
 ]{tex/ttthesis}
 
+\usepackage{comment, amsmath}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{calc,trees,positioning,arrows,chains,shapes.geometric,  decorations.pathreplacing,decorations.pathmorphing,shapes,  matrix,shapes.symbols}
+\usepackage{pgfplots, pgfplotstable}
+\usepackage{xcolor, soul}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+\usepackage{tikz}
+
+\colorlet{precision}{blue!30}
+\colorlet{recall}{red!30}
+\colorlet{fscore}{green!30}
+
+\colorlet{blue}{blue!50!cyan!50}
+\colorlet{turquoise}{blue!40!cyan!50}
+\colorlet{light}{blue!40!white}
+\colorlet{bluegreen}{blue!30!green!70}
+\colorlet{lightgreen}{bluegreen!30}
+\colorlet{petrol}{teal!60!cyan!40}
+\colorlet{light2}{petrol!30!white}
+\colorlet{yellow}{yellow}
+\colorlet{red}{red!30}
+\usetikzlibrary{patterns}
+
+\newcommand{\hlc}[2][yellow]{{\sethlcolor{#1}\hl{#2}}}
+\newdimen\LineSpace
+\tikzset{
+    line space/.code={\LineSpace=#1},
+    line space=3pt
+}
+\newdimen\GridSize
+\tikzset{
+    GridSize/.code={\GridSize=#1},
+    GridSize=3pt
+}
+
+
 \input{tex/colorscheme}
 \input{tex/lststyles}
 \input{tex/tikzstyles}
@@ -15,9 +57,13 @@
 \usepackage{caption}
 \usepackage{svg}
 \usepackage{array}
+\usepackage{algorithm}
+\usepackage{algorithmic}
 \usepackage{multirow}
 \usepackage[normalem]{ulem}
 \useunder{\uline}{\ul}{}
+\usepackage{ mathrsfs }
+
 %****************************************https://www.overleaf.com/project/5bf3df67d5a222068c001d80*****************************%
 % META                                                                %
 %*********************************************************************%
@@ -45,7 +91,7 @@
 }{
 	\newcommand{\theforename}{Jay Dilipbhai}
 	\newcommand{\thesurname}{Vala}
-	\newcommand{\thetitle}{Classification of multilingual legal text Using deep learning: Evaluation of General-Purpose Resources for a Legal Domain-Specific Task}
+	\newcommand{\thetitle}{Classification of Multilingual Legal Text Using Deep Learning: Evaluation of General-Purpose Resources for Legal Domain-Specific Task}
 	\newcommand{\thedate}{4. Monat 2019}
 	
 }
@@ -74,7 +120,7 @@
 \makeglossaries
 \newacronym{SVM}{SVM}{Support Vector Machines}
 \newacronym{LSTM}{LSTM}{Long Short Term Memory}
-\newacronym{BiLSTM}{BiLSTMs}{Bidirectional Long Short Term Memory}
+\newacronym{BiLSTM}{BiLSTM}{Bidirectional Long Short Term Memory}
 \newacronym{TF-IDF}{TF-IDF}{Term Frequency Inverse Document Frequency}
 \newacronym{AI}{AI}{Artificial Intelligence}
 \newacronym{NLP}{NLP}{Natural Language Processing}
@@ -122,7 +168,7 @@
     
     First and foremost, I want to thank my supervisor M.Sc. Sabine Wehnert, without whom this thesis would not have been possible in the first place. Her constant support, discussions, and assistance at every step were very helpful. I want to thank M.Sc. Marcus Thiel, for his assistance and suggestions on validating various concepts, and Stefan Langer for his support and ideas.
     
-    I want to thank my Mom, Dad, Sister, and Brother for their moral and financial support. They stood by me in my thick and thin. I can not even begin to describe the gratitude and appreciation for their support.
+    I want to thank my Family for their moral and financial support. They stood by me in my thick and thin. I can not even begin to describe the gratitude and appreciation for their support.
     
     I want to thank my friends for listening to me, and at times tolerating me. They were like a family away from home. 
     
@@ -195,7 +241,7 @@
 
 \appendix
 \include{chapters/appendix}
-\include{chapters/declaration.tex}
+%\include{chapters/declaration.tex}
 %*********************************************************************%
 % LITERATURE                                                          %
 %*********************************************************************%
